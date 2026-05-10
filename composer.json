@@ -19,6 +19,8 @@
         "telegram-bot/api": "^2.5"
     },
     "require-dev": {
+        "captainhook/captainhook": "^5.29",
+        "captainhook/hook-installer": "^1.0",
         "fakerphp/faker": "^1.23",
         "laravel/breeze": "^2.3",
         "laravel/pail": "^1.2.2",
@@ -81,6 +83,7 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
+            "captainhook/hook-installer": true,
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
         }
