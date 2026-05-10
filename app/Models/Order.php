@@ -24,7 +24,6 @@ class Order extends Model
     protected $casts = [
         'delivery_date' => 'datetime',
         'total_amount' => 'decimal:2',
-        'telegram_notified_at' => 'datetime',
     ];
 
     // Получить товары в заказе

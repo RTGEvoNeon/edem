@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use App\Models\User;
@@ -20,7 +22,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
         $this->hideSensitiveRequestDetails();
 
         // $isLocal = $this->app->environment('local');
-                    
+
         // Telescope::filter(function (IncomingEntry $entry) use ($isLocal) {
         //     return $isLocal ||
         //            $entry->isReportableException() ||
