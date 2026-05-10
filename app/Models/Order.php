@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     protected $fillable = [
+        'user_id',
         'customer_name',
         'customer_phone',
         'customer_email',
@@ -17,11 +18,13 @@ class Order extends Model
         'status',
         'delivery_date',
         'notes',
+        'product_url',
     ];
 
     protected $casts = [
         'delivery_date' => 'datetime',
         'total_amount' => 'decimal:2',
+        'telegram_notified_at' => 'datetime',
     ];
 
     // Получить товары в заказе

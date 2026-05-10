@@ -115,7 +115,7 @@ class PageController extends Controller
     public function dashboard(): View
     {
         $user = Auth::user();
-        $orders = Order::where('customer_email', $user->email)
+        $orders = Order::where('user_id', $user->id)
             ->orderBy('created_at', 'desc')
             ->with('orderItems')
             ->get();

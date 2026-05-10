@@ -4,26 +4,16 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Models\Order;
 use Illuminate\Support\Facades\Log;
-use TelegramBot\Api\BotApi;
+use App\Models\Order;
 use Throwable;
 
-class TelegramService
+class VKService
 {
-    protected BotApi $telegram;
-
-    protected string $chatId;
+    protected array $phones;
 
     public function __construct()
-    {
-        $this->telegram = new BotApi(config('services.telegram.bot_token'));
-        $this->chatId = config('services.telegram.chat_id');
-    }
-
-    public function simple_message()
-    {
-        $this->telegram->sendMessage(config('services.telegram.chat_id'), 'Привет, это тестовое сообщение!');
+   
     }
 
     public function sendOrderMessage(Order $order, string $productUrl): void
@@ -36,18 +26,11 @@ class TelegramService
             $message .= '📍 <b>Адрес:</b> '.$order->delivery_address."\n";
             $message .= '💬 <b>Комментарий:</b> '.$order->notes."\n";
             $message .= '💰 <b>Сумма заказа:</b> '.number_format((float) $order->total_amount, 0, ',', ' ')." руб.\n";
-
-            $this->telegram->sendMessage($this->chatId, $message, 'HTML');
+            send_message($message);
         } catch (Throwable $e) {
-            Log::error('Не удалось отправить уведомление о заказе в Telegram', [
-                'order_id' => $order->id,
+            Log::error('Не удалось отправить SMS менеджеру', [
                 'exception' => $e->getMessage(),
             ]);
         }
     }
-
-    // методы для отправки сообщений, фотографий и т.д.
-
-    // отправка уведомлений о новых заказах
-
 }
