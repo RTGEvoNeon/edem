@@ -1116,13 +1116,18 @@
             const data = await response.json();
 
             if (data.success) {
-                document.getElementById('order-form').classList.add('hidden');
-                document.getElementById('order-success').classList.remove('hidden');
-
                 // Яндекс.Метрика: успешная отправка заказа
                 if (typeof ym !== 'undefined') {
                     ym(104582209, 'reachGoal', 'order_submitted');
                 }
+
+                if (data.payment_url) {
+                    window.location.href = data.payment_url;
+                    return;
+                }
+
+                document.getElementById('order-form').classList.add('hidden');
+                document.getElementById('order-success').classList.remove('hidden');
 
                 setTimeout(() => {
                     closeOrderModal();
