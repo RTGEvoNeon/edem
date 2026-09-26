@@ -126,7 +126,7 @@
 
                     <!-- Контент карточки -->
                     <div class="flex flex-col flex-1 p-3 sm:p-6 space-y-1 sm:space-y-4">
-                        <h3 class="font-display text-sm sm:text-2xl font-semibold text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-2">
+                        <h3 class="font-display text-sm sm:text-2xl font-semibold text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-2 min-h-[2.5em] sm:min-h-[2.4em]">
                             {{ $product->name }}
                         </h3>
 
