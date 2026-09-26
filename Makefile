@@ -2,7 +2,7 @@
 # Использование: make <команда>
 
 # Настройки сервера
-REMOTE_HOST = 185.119.59.195
+REMOTE_HOST = xn----8sbkccshgr4ce9k.xn--p1ai
 REMOTE_USER = root
 REMOTE_PATH = /var/www/edem
 
