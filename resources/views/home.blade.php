@@ -200,8 +200,8 @@
                                 </div>
                             </a>
                             <div class="p-3 sm:p-6 flex flex-col flex-1 min-h-0">
-                                <h3 class="font-display text-sm sm:text-2xl font-semibold text-gray-900 mb-1 sm:mb-2 line-clamp-2 min-h-[2.5em] sm:min-h-[2.4em]">{{ $product->name }}</h3>
-                                <p class="hidden sm:block text-gray-600 leading-relaxed line-clamp-2 flex-1 min-h-0">{{ $product->description ?? 'Прекрасный букет для особого случая' }}</p>
+                                <h3 class="font-display text-sm sm:text-2xl font-semibold text-gray-900 mb-1 sm:mb-2 line-clamp-2 min-h-10 sm:min-h-16">{{ $product->name }}</h3>
+                                <p class="hidden sm:line-clamp-2 text-gray-600 leading-relaxed min-h-[52px]">{{ $product->description ?? 'Прекрасный букет для особого случая' }}</p>
                                 <a href="{{ route('products.show', $product->slug) }}" class="block w-full mt-2 sm:mt-4 group/btn relative overflow-hidden bg-gradient-to-r from-primary-600 to-primary-500 text-white px-3 py-2 sm:px-6 sm:py-3.5 rounded-full font-semibold text-xs sm:text-base shadow-lg hover:shadow-xl transition-all hover:scale-[1.02]" onclick="if(typeof ym !== 'undefined') ym(104582209, 'reachGoal', 'click_product_card');">
                                     <span class="relative z-10 flex items-center justify-center gap-1 sm:gap-2">
                                         <span>Заказать букет</span>
