@@ -200,6 +200,7 @@
         mask-composite: exclude;
         border-radius: 2rem;
         opacity: 0.5;
+        pointer-events: none;
     }
 
     /* Типографика с особым характером */
