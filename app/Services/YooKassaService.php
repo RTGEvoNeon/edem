@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Setting;
+use App\Models\User;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -31,9 +32,9 @@ class YooKassaService
     }
 
     /**
-     * Оплата доступна конкретному клиенту. В тестовом режиме — только телефонам и email из списка.
+     * Оплата доступна конкретному посетителю. В тестовом режиме — только администраторам.
      */
-    public function isPaymentAvailableFor(?string $phone, ?string $email): bool
+    public function isPaymentAvailableFor(?User $user): bool
     {
         if (! $this->isPaymentEnabled()) {
             return false;
@@ -43,28 +44,7 @@ class YooKassaService
             return true;
         }
 
-        $contacts = preg_split('/[\r\n,;]+/', (string) Setting::get('pay_test_contacts', ''), -1, PREG_SPLIT_NO_EMPTY);
-        $phoneKey = $this->normalizePhone($phone);
-        $email = $email !== null ? mb_strtolower(trim($email)) : null;
-
-        foreach ($contacts as $contact) {
-            if (str_contains($contact, '@')) {
-                if ($email !== null && mb_strtolower($contact) === $email) {
-                    return true;
-                }
-            } elseif ($phoneKey !== null && $this->normalizePhone($contact) === $phoneKey) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private function normalizePhone(?string $phone): ?string
-    {
-        $digits = preg_replace('/\D/', '', (string) $phone);
-
-        return strlen($digits) >= 10 ? substr($digits, -10) : null;
+        return (bool) $user?->is_admin;
     }
 
     /**
@@ -72,7 +52,7 @@ class YooKassaService
      */
     public function createPayment(Order $order): string
     {
-        if (! $this->isPaymentAvailableFor($order->customer_phone, $order->customer_email)) {
+        if (! $this->isPaymentEnabled()) {
             throw new RuntimeException('Онлайн-оплата отключена в настройках сайта.');
         }
 

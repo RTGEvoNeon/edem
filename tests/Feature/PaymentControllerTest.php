@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Models\Setting;
+use App\Models\User;
 use App\Services\YooKassaService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
@@ -53,21 +54,18 @@ class PaymentControllerTest extends TestCase
         $this->assertTrue($service->isPaymentEnabled());
     }
 
-    public function test_test_mode_allows_payment_only_for_listed_contacts(): void
+    public function test_test_mode_allows_payment_only_for_admins(): void
     {
         $this->enablePayments();
         Setting::set('pay_test_only', true);
-        Setting::set('pay_test_contacts', "+7 (999) 123-45-67\nTester@Example.com");
         $service = app(YooKassaService::class);
 
-        $this->assertTrue($service->isPaymentAvailableFor('89991234567', null));
-        $this->assertTrue($service->isPaymentAvailableFor('+7 999 123 45 67', null));
-        $this->assertTrue($service->isPaymentAvailableFor(null, 'tester@example.com'));
-        $this->assertFalse($service->isPaymentAvailableFor('+7 900 000 00 00', 'other@example.com'));
-        $this->assertFalse($service->isPaymentAvailableFor(null, null));
+        $this->assertTrue($service->isPaymentAvailableFor(User::factory()->create(['is_admin' => true])));
+        $this->assertFalse($service->isPaymentAvailableFor(User::factory()->create(['is_admin' => false])));
+        $this->assertFalse($service->isPaymentAvailableFor(null));
 
         Setting::set('pay_test_only', false);
-        $this->assertTrue($service->isPaymentAvailableFor('+7 900 000 00 00', null));
+        $this->assertTrue($service->isPaymentAvailableFor(null));
     }
 
     public function test_order_submit_does_not_create_payment_when_pay_enabled_is_false(): void

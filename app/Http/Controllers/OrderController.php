@@ -72,7 +72,7 @@ class OrderController extends Controller
             return $order;
         });
 
-        if (! $this->yooKassa->isPaymentAvailableFor($order->customer_phone, $order->customer_email)) {
+        if (! $this->yooKassa->isPaymentAvailableFor($request->user())) {
             $this->notifier->notifyNewOrder($order, $productUrl);
 
             return response()->json([
