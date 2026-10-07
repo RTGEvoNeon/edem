@@ -52,7 +52,7 @@
 
             <div id="cart-error" class="hidden bg-red-50 border-2 border-red-200 rounded-xl p-4 text-red-700 text-sm"></div>
 
-            <button type="submit" class="btn-organic w-full py-4 animated-gradient text-white font-semibold text-lg hover:glow-primary focus:outline-none focus:ring-4 focus:ring-primary-200">
+            <button type="submit" class="w-full py-4 bg-primary-600 text-white rounded-full font-semibold text-lg shadow-xl hover:bg-primary-700 hover:shadow-2xl transition-all focus:outline-none focus:ring-4 focus:ring-primary-200 disabled:opacity-60">
                 Оформить заказ
             </button>
         </form>
