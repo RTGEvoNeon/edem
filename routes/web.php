@@ -24,6 +24,7 @@ Route::get('/contacts', [PageController::class, 'contacts'])->name('contacts');
 Route::get('/privacy', [PageController::class, 'privacy'])->name('privacy');
 
 Route::get('/cart', [CartController::class, 'cart'])->name('cart');
+Route::get('/cart/products', [CartController::class, 'products'])->name('cart.products');
 // Каталог товаров
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/product/{slug}', [ProductController::class, 'show'])->name('products.show');

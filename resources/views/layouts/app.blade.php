@@ -69,6 +69,11 @@
                     <a href="/delivery" class="px-4 py-2 text-gray-700 hover:text-primary-600 transition-colors rounded-lg hover:bg-white/50">Доставка</a>
                     <a href="/about" class="px-4 py-2 text-gray-700 hover:text-primary-600 transition-colors rounded-lg hover:bg-white/50">О нас</a>
 
+                    <a href="{{ route('cart') }}" class="relative ml-2 px-3 py-2 text-gray-700 hover:text-primary-600 transition-colors rounded-lg hover:bg-white/50" aria-label="Корзина">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                        <span data-cart-count class="hidden absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-primary-500 text-white text-xs font-semibold flex items-center justify-center">0</span>
+                    </a>
+
                     @auth
                     <a href="{{ route('dashboard') }}" class="ml-4 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors font-medium flex items-center gap-2 shadow-md hover:shadow-lg">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -161,6 +166,10 @@
                     </span>
                     <div class="absolute inset-0 bg-gradient-to-r from-primary-50 to-gold-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </a>
+                <a href="{{ route('cart') }}" class="mobile-menu-link block relative px-5 py-4 text-gray-700 font-medium rounded-2xl transition-all duration-300 hover:text-primary-600 hover:bg-white/80 hover:shadow-md hover:translate-x-2 group overflow-hidden">
+                    Корзина <span data-cart-count class="hidden ml-2 px-2 py-0.5 rounded-full bg-primary-500 text-white text-xs font-semibold">0</span>
+                </a>
+
                 <a href="/delivery" class="mobile-menu-link block relative px-5 py-4 text-gray-700 font-medium rounded-2xl transition-all duration-300 hover:text-primary-600 hover:bg-white/80 hover:shadow-md hover:translate-x-2 group overflow-hidden">
                     <span class="relative z-10 flex items-center gap-3">
                         <svg class="w-5 h-5 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -334,6 +343,7 @@
     <main>
         {{ $slot ?? '' }}
         @yield('content')
+        @include('partials.cart-script')
     </main>
 
     <!-- Footer -->

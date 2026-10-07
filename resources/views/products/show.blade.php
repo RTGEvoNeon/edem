@@ -685,6 +685,18 @@
                     <!-- Действия -->
                     <div class="flex flex-col sm:flex-row gap-4 mb-12">
                         <button
+                            type="button"
+                            onclick="addToCart(this)"
+                            data-product-id="{{ $product->id }}"
+                            data-product-name="{{ $product->name }}"
+                            data-product-slug="{{ $product->slug }}"
+                            data-product-price="{{ $product->price }}"
+                            data-product-image="{{ $product->main_image }}"
+                            class="flex-1 py-4 rounded-full border-2 border-primary-500 text-primary-600 font-semibold text-lg hover:bg-primary-50 transition-all text-center"
+                        >
+                            <span data-cart-label>В корзину</span>
+                        </button>
+                        <button
                             onclick="openOrderModal()"
                             class="btn-organic flex-1 py-4 animated-gradient text-white font-semibold text-lg hover:glow-primary focus:outline-none focus:ring-4 focus:ring-primary-200 text-center"
                         >

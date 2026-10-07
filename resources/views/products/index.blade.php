@@ -148,6 +148,16 @@
                                 </svg>
                                 <span>Подробнее</span>
                             </a>
+                            <button type="button"
+                                    onclick="addToCart(this)"
+                                    data-product-id="{{ $product->id }}"
+                                    data-product-name="{{ $product->name }}"
+                                    data-product-slug="{{ $product->slug }}"
+                                    data-product-price="{{ $product->price }}"
+                                    data-product-image="{{ $product->main_image }}"
+                                    class="flex-1 bg-white border-2 border-primary-500 text-primary-600 px-3 py-2 sm:px-5 sm:py-3 rounded-full font-semibold text-xs sm:text-base text-center transition-all hover:bg-primary-50 flex items-center justify-center">
+                                <span data-cart-label>В корзину</span>
+                            </button>
                         </div>
                     </div>
                 </article>
