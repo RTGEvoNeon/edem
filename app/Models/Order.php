@@ -37,9 +37,22 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    /**
+     * @return HasMany<Payment, $this>
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * Последняя попытка оплаты.
+     *
+     * @return HasOne<Payment, $this>
+     */
     public function payment(): HasOne
     {
-        return $this->hasOne(Payment::class);
+        return $this->hasOne(Payment::class)->latestOfMany();
     }
 
     // Получить общую сумму заказа

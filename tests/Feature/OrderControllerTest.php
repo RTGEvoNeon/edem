@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Mail\NewOrderMail;
 use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
@@ -13,6 +14,13 @@ use Tests\TestCase;
 class OrderControllerTest extends TestCase
 {
     use RefreshDatabase;
+
+    private function items(int $price = 1500, int $quantity = 1): array
+    {
+        $product = Product::factory()->create(['price' => $price, 'is_available' => true]);
+
+        return [['product_id' => $product->id, 'quantity' => $quantity]];
+    }
 
     public function test_submit_creates_order_and_sends_email_to_admin(): void
     {
@@ -24,7 +32,7 @@ class OrderControllerTest extends TestCase
             'customer_phone' => '+7 (999) 123-45-67',
             'delivery_address' => 'г. Москва, ул. Тестовая, д. 1',
             'notes' => 'Позвонить после 18:00',
-            'total_amount' => 1500,
+            'items' => $this->items(),
             'product_url' => 'https://эдемский-сад.рф/product/test',
         ]);
 
@@ -56,7 +64,7 @@ class OrderControllerTest extends TestCase
         $this->postJson('/order/submit', [
             'customer_name' => 'Иван',
             'customer_phone' => '+7 999 000 00 00',
-            'total_amount' => 100,
+            'items' => $this->items(),
         ])->assertOk();
 
         Mail::assertSent(NewOrderMail::class, function (NewOrderMail $mail) {
@@ -74,7 +82,7 @@ class OrderControllerTest extends TestCase
         $this->postJson('/order/submit', [
             'customer_name' => 'Иван',
             'customer_phone' => '+7 999 000 00 00',
-            'total_amount' => 100,
+            'items' => $this->items(),
         ])->assertOk();
 
         Mail::assertSent(NewOrderMail::class, function (NewOrderMail $mail) {
@@ -90,7 +98,7 @@ class OrderControllerTest extends TestCase
         $response = $this->postJson('/order/submit', [
             'customer_name' => 'Иван',
             'customer_phone' => '+7 999 000 00 00',
-            'total_amount' => 100,
+            'items' => $this->items(),
         ]);
 
         $response->assertOk();
@@ -108,7 +116,7 @@ class OrderControllerTest extends TestCase
         $response = $this->postJson('/order/submit', [
             'customer_name' => 'Иван',
             'customer_phone' => '+7 999 000 00 00',
-            'total_amount' => 100,
+            'items' => $this->items(),
         ]);
 
         $response->assertOk()->assertJson(['success' => true]);
@@ -120,7 +128,7 @@ class OrderControllerTest extends TestCase
         $response = $this->postJson('/order/submit', []);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['customer_name', 'customer_phone', 'total_amount']);
+            ->assertJsonValidationErrors(['customer_name', 'customer_phone', 'items']);
     }
 
     public function test_new_order_mail_renders_with_order_data(): void
@@ -144,5 +152,43 @@ class OrderControllerTest extends TestCase
         $mailable->assertSeeInHtml('Хрупкое');
         $mailable->assertSeeInHtml('2500.00');
         $mailable->assertSeeInHtml('https://эдемский-сад.рф/product/x');
+    }
+
+    public function test_submit_calculates_total_on_server_and_saves_items(): void
+    {
+        Mail::fake();
+
+        $a = Product::factory()->create(['price' => 1000, 'is_available' => true]);
+        $b = Product::factory()->create(['price' => 250, 'is_available' => true]);
+
+        $this->postJson('/order/submit', [
+            'customer_name' => 'Иван',
+            'customer_phone' => '+7 999 000 00 00',
+            'customer_email' => 'ivan@example.com',
+            'total_amount' => 1,
+            'items' => [
+                ['product_id' => $a->id, 'quantity' => 2],
+                ['product_id' => $b->id, 'quantity' => 1],
+            ],
+        ])->assertOk();
+
+        $order = Order::firstOrFail();
+        $this->assertSame('2250.00', $order->total_amount);
+        $this->assertSame('ivan@example.com', $order->customer_email);
+        $this->assertDatabaseCount('order_items', 2);
+        $this->assertDatabaseHas('order_items', ['order_id' => $order->id, 'product_id' => $a->id, 'quantity' => 2, 'price' => 1000]);
+    }
+
+    public function test_submit_rejects_unavailable_or_unknown_products(): void
+    {
+        $product = Product::factory()->create(['is_available' => false]);
+
+        $this->postJson('/order/submit', [
+            'customer_name' => 'Иван',
+            'customer_phone' => '+7 999 000 00 00',
+            'items' => [['product_id' => $product->id, 'quantity' => 1]],
+        ])->assertStatus(422)->assertJson(['success' => false]);
+
+        $this->assertDatabaseCount('orders', 0);
     }
 }

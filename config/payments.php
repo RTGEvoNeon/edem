@@ -17,7 +17,6 @@ return [
 
     'yookassa' => [
         'secret_key' => env('YOOKASSA_SECRET_KEY'),
-        'return_url' => env('APP_URL').'/payment/return',
     ],
 
 ];

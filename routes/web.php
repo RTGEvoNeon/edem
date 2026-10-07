@@ -38,7 +38,8 @@ Route::post('/opt/order/submit', [WholesaleOrderController::class, 'submit'])->n
 Route::post('/order/submit', [OrderController::class, 'submit'])->name('order.submit');
 
 // Оплата ЮKassa
-Route::get('/payment/return', [PaymentController::class, 'return'])->name('payment.return');
+Route::get('/payment/return/{order}', [PaymentController::class, 'return'])->middleware('signed')->name('payment.return');
+Route::get('/payment/retry/{order}', [PaymentController::class, 'retry'])->middleware('signed')->name('payment.retry');
 Route::post('/payment/webhook/yookassa', [YooKassaWebhookController::class, 'handle'])->name('payment.webhook.yookassa');
 
 // Sitemap

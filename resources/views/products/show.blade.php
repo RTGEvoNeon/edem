@@ -812,7 +812,8 @@
         </div>
 
         <form id="order-form" class="space-y-4">
-            <input type="hidden" name="total_amount" value="{{ $product->price }}">
+            <input type="hidden" name="items[0][product_id]" value="{{ $product->id }}">
+            <input type="hidden" name="items[0][quantity]" value="1">
             <input type="hidden" name="product_url" value="{{ url('/product/' . $product->slug) }}">
 
             <div>
@@ -835,6 +836,16 @@
                     required
                     class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary-400 focus:ring-2 focus:ring-primary-200 transition-all"
                     placeholder="+7 (___) ___-__-__"
+                >
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <input
+                    type="email"
+                    name="customer_email"
+                    class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary-400 focus:ring-2 focus:ring-primary-200 transition-all"
+                    placeholder="Для чека и подтверждения заказа"
                 >
             </div>
 
@@ -870,7 +881,7 @@
                     type="submit"
                     class="btn-organic w-full py-4 animated-gradient text-white font-semibold text-lg hover:glow-primary focus:outline-none focus:ring-4 focus:ring-primary-200"
                 >
-                    Отправить заявку
+                    Оформить заказ
                 </button>
             </div>
         </form>
@@ -1152,7 +1163,7 @@
             errorDiv.textContent = error.message;
             errorDiv.classList.remove('hidden');
             submitButton.disabled = false;
-            submitButton.textContent = 'Отправить заявку';
+            submitButton.textContent = 'Оформить заказ';
         }
     });
 </script>

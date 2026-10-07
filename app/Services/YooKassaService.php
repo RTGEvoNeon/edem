@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Setting;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use RuntimeException;
 use YooKassa\Client;
@@ -17,9 +18,53 @@ use YooKassa\Model\Payment\PaymentStatus;
 
 class YooKassaService
 {
+    public function __construct(private readonly OrderNotifier $notifier) {}
+
+    /**
+     * Оплата настроена: включена в настройках, заданы shop_id и секретный ключ.
+     */
     public function isPaymentEnabled(): bool
     {
-        return Setting::get('pay_enabled', false);
+        return (bool) Setting::get('pay_enabled', false)
+            && (string) Setting::get('yookassa_shop_id', '') !== ''
+            && (string) config('payments.yookassa.secret_key') !== '';
+    }
+
+    /**
+     * Оплата доступна конкретному клиенту. В тестовом режиме — только телефонам и email из списка.
+     */
+    public function isPaymentAvailableFor(?string $phone, ?string $email): bool
+    {
+        if (! $this->isPaymentEnabled()) {
+            return false;
+        }
+
+        if (! (bool) Setting::get('pay_test_only', false)) {
+            return true;
+        }
+
+        $contacts = preg_split('/[\r\n,;]+/', (string) Setting::get('pay_test_contacts', ''), -1, PREG_SPLIT_NO_EMPTY);
+        $phoneKey = $this->normalizePhone($phone);
+        $email = $email !== null ? mb_strtolower(trim($email)) : null;
+
+        foreach ($contacts as $contact) {
+            if (str_contains($contact, '@')) {
+                if ($email !== null && mb_strtolower($contact) === $email) {
+                    return true;
+                }
+            } elseif ($phoneKey !== null && $this->normalizePhone($contact) === $phoneKey) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function normalizePhone(?string $phone): ?string
+    {
+        $digits = preg_replace('/\D/', '', (string) $phone);
+
+        return strlen($digits) >= 10 ? substr($digits, -10) : null;
     }
 
     /**
@@ -27,7 +72,7 @@ class YooKassaService
      */
     public function createPayment(Order $order): string
     {
-        if (! $this->isPaymentEnabled()) {
+        if (! $this->isPaymentAvailableFor($order->customer_phone, $order->customer_email)) {
             throw new RuntimeException('Онлайн-оплата отключена в настройках сайта.');
         }
 
@@ -41,7 +86,7 @@ class YooKassaService
             'confirmation' => [
                 'type' => 'redirect',
                 'locale' => 'ru_RU',
-                'return_url' => config('payments.yookassa.return_url'),
+                'return_url' => URL::signedRoute('payment.return', ['order' => $order->id]),
             ],
             'capture' => true,
             'description' => "Заказ №{$order->id}",
@@ -50,7 +95,7 @@ class YooKassaService
             ],
         ], $idempotenceKey);
 
-        $order->payment()->create([
+        $order->payments()->create([
             'yookassa_payment_id' => $response->getId(),
             'idempotence_key' => $idempotenceKey,
             'status' => $response->getStatus(),
@@ -82,17 +127,23 @@ class YooKassaService
             return;
         }
 
-        $paymentObject = $notification->getObject();
-
         $payment = Payment::query()
-            ->where('yookassa_payment_id', $paymentObject->getId())
+            ->where('yookassa_payment_id', $notification->getObject()->getId())
             ->first();
 
         if (! $payment) {
             return;
         }
 
-        // Не доверяем статусу из тела уведомления — перепроверяем напрямую через API.
+        $this->syncPayment($payment);
+    }
+
+    /**
+     * Не доверяем статусу из уведомления или из браузера — перепроверяем платёж напрямую через API
+     * и обновляем платёж и заказ.
+     */
+    public function syncPayment(Payment $payment): Payment
+    {
         $actual = $this->client()->getPaymentInfo($payment->yookassa_payment_id);
 
         $payment->update([
@@ -100,15 +151,21 @@ class YooKassaService
             'raw_response' => $actual instanceof YooKassaPayment ? $actual->jsonSerialize() : [],
         ]);
 
-        if ($notification->getEvent() === NotificationEventType::PAYMENT_SUCCEEDED
-            && $actual->getStatus() === PaymentStatus::SUCCEEDED) {
-            $payment->order()->update(['status' => 'confirmed']);
+        $order = $payment->order;
+
+        if ($actual->getStatus() === PaymentStatus::SUCCEEDED && $order->status === 'pending') {
+            $order->update(['status' => 'confirmed']);
+            $this->notifier->notifyNewOrder($order);
         }
 
-        if ($notification->getEvent() === NotificationEventType::PAYMENT_CANCELED
-            && $actual->getStatus() === PaymentStatus::CANCELED) {
-            $payment->order()->update(['status' => 'cancelled']);
+        // Отмена одной попытки не отменяет заказ, если есть другой успешный платёж.
+        if ($actual->getStatus() === PaymentStatus::CANCELED
+            && $order->status === 'pending'
+            && ! $order->payments()->where('status', PaymentStatus::SUCCEEDED)->exists()) {
+            $order->update(['status' => 'cancelled']);
         }
+
+        return $payment->refresh();
     }
 
     public function isNotificationIpTrusted(string $ip): bool
