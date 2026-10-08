@@ -77,9 +77,9 @@
 
         const label = button.querySelector('[data-cart-label]');
         if (label) {
-            const original = label.textContent;
-            label.textContent = 'Добавлено ✓';
-            setTimeout(() => { label.textContent = original; }, 1500);
+            const original = label.innerHTML;
+            label.innerHTML = '<svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>';
+            setTimeout(() => { label.innerHTML = original; }, 1500);
         }
     }
 </script>

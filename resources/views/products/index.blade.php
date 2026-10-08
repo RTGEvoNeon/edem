@@ -155,8 +155,9 @@
                                     data-product-slug="{{ $product->slug }}"
                                     data-product-price="{{ $product->price }}"
                                     data-product-image="{{ $product->main_image }}"
+                                    aria-label="В корзину" title="В корзину"
                                     class="flex-1 bg-white border-2 border-primary-500 text-primary-600 px-3 py-2 sm:px-5 sm:py-3 rounded-full font-semibold text-xs sm:text-base text-center transition-all hover:bg-primary-50 flex items-center justify-center">
-                                <span data-cart-label>В корзину</span>
+                                <span data-cart-label class="flex items-center justify-center"><svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg></span>
                             </button>
                         </div>
                     </div>

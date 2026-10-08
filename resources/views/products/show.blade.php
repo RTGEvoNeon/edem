@@ -693,9 +693,11 @@
                             data-product-slug="{{ $product->slug }}"
                             data-product-price="{{ $product->price }}"
                             data-product-image="{{ $product->main_image }}"
-                            class="flex-1 py-4 rounded-full border-2 border-primary-500 text-primary-600 font-semibold text-lg hover:bg-primary-50 transition-all text-center"
+                            aria-label="В корзину"
+                            title="В корзину"
+                            class="flex-1 py-4 rounded-full border-2 border-primary-500 text-primary-600 font-semibold text-lg hover:bg-primary-50 transition-all text-center flex items-center justify-center"
                         >
-                            <span data-cart-label>В корзину</span>
+                            <span data-cart-label class="flex items-center justify-center"><svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg></span>
                         </button>
                         <button
                             onclick="openOrderModal()"
