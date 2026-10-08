@@ -11,7 +11,7 @@ use App\Models\Product;
 use App\Models\Setting;
 use App\Models\User;
 use App\Services\YooKassaService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Mockery\MockInterface;
@@ -19,7 +19,7 @@ use Tests\TestCase;
 
 class PaymentControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     private function payload(): array
     {

@@ -7,13 +7,13 @@ namespace Tests\Feature;
 use App\Mail\NewOrderMail;
 use App\Models\Order;
 use App\Models\Product;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class OrderControllerTest extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 
     private function items(int $price = 1500, int $quantity = 1): array
     {
