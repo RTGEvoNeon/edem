@@ -13,7 +13,7 @@
             <div class="text-6xl">🌸</div>
             <h1 class="font-display text-3xl lg:text-4xl font-bold text-gray-900">Заказ №{{ $order->id }} оплачен</h1>
             <p class="text-lg text-gray-600 leading-relaxed">
-                Спасибо! Мы получили оплату и скоро свяжемся с вами для уточнения деталей доставки.
+                Спасибо! Мы получили оплату.
             </p>
         @elseif($state === 'canceled')
             <div class="text-6xl">😔</div>
