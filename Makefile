@@ -12,7 +12,7 @@ LOCAL_WHOLESALES = ./storage/app/public/wholesales/
 REMOTE_PRODUCTS = $(REMOTE_PATH)/storage/app/public/products
 REMOTE_WHOLESALES = $(REMOTE_PATH)/storage/app/public/wholesales
 
-.PHONY: help sync sync-dry deploy deploy-branch deploy-develop ssh logs storage-link build db-tunnel
+.PHONY: help sync sync-dry deploy deploy-branch deploy-develop ssh logs storage-link build db-tunnel env-set
 
 # Помощь (по умолчанию)
 help:
@@ -26,6 +26,7 @@ help:
 	@echo "  make ssh          - Подключиться к серверу по SSH"
 	@echo "  make logs         - Посмотреть логи Docker на сервере"
 	@echo "  make storage-link - Создать симлинк storage на сервере"
+	@echo "  make env-set KEY=<имя> VALUE=<значение> - Изменить/добавить переменную в .env на сервере и перезапустить app"
 	@echo "  make db-tunnel    - Создать SSH туннель к БД (localhost:3307)"
 
 # Сборка фронтенда
@@ -114,3 +115,30 @@ db-tunnel:
 	@echo "⚠️  Нажмите Ctrl+C для остановки туннеля"
 	@echo ""
 	ssh -L 3307:localhost:3306 $(REMOTE_USER)@$(REMOTE_HOST) -N
+
+# Скрипт, выполняемый на сервере: меняет KEY в .env, а если её нет — добавляет в конец.
+# Значение приходит в base64, чтобы не зависеть от кавычек и спецсимволов.
+define ENV_SET_SCRIPT
+set -e
+cd $(REMOTE_PATH)
+VAL=$$(printf '%s' "$$ENV_VAL_B64" | base64 -d)
+cp .env .env.bak
+KEY="$$ENV_KEY" VAL="$$VAL" awk 'BEGIN { k = ENVIRON["KEY"]; v = ENVIRON["VAL"] } index($$0, k "=") == 1 { print k "=" v; found = 1; next } { print } END { if (!found) print k "=" v }' .env.bak > .env.new
+cat .env.new > .env
+rm .env.new
+grep -n "^$$ENV_KEY=" .env
+endef
+export ENV_SET_SCRIPT
+
+# Изменить/добавить переменную в .env на проде и перезапустить контейнер app
+# Пример: make env-set KEY=TELESCOPE_LOG_LEVEL VALUE=info
+env-set:
+	@if [ -z "$(KEY)" ] || [ -z "$(VALUE)" ]; then echo "Использование: make env-set KEY=<имя> VALUE=<значение>"; exit 1; fi
+	@echo "$(KEY)" | grep -Eq '^[A-Za-z_][A-Za-z0-9_]*$$' || { echo "❌ Некорректное имя переменной: $(KEY)"; exit 1; }
+	@echo "✏️  Обновление $(KEY) в .env на сервере (бэкап: .env.bak)..."
+	@printf '%s\n' "$$ENV_SET_SCRIPT" | ssh $(REMOTE_USER)@$(REMOTE_HOST) "ENV_KEY='$(KEY)' ENV_VAL_B64='$$(printf '%s' "$$VALUE" | base64 | tr -d '\n')' sh -s"
+	@echo "🧹 Сброс кеша конфига..."
+	ssh $(REMOTE_USER)@$(REMOTE_HOST) "cd $(REMOTE_PATH) && docker compose -f docker-compose.prod.yml exec -T app php artisan config:clear"
+	@echo "🔄 Перезапуск контейнера app..."
+	ssh $(REMOTE_USER)@$(REMOTE_HOST) "cd $(REMOTE_PATH) && docker compose -f docker-compose.prod.yml restart app"
+	@echo "✅ Готово!"
