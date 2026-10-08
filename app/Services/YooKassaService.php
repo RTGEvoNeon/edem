@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\Payment;
 use App\Models\Setting;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 use RuntimeException;
@@ -36,15 +37,33 @@ class YooKassaService
      */
     public function isPaymentAvailableFor(?User $user): bool
     {
-        if (! $this->isPaymentEnabled()) {
-            return false;
+        return $this->paymentUnavailableReason($user) === null;
+    }
+
+    /**
+     * Причина, по которой оплата недоступна посетителю (null — оплата доступна).
+     */
+    public function paymentUnavailableReason(?User $user): ?string
+    {
+        if (! (bool) Setting::get('pay_enabled', false)) {
+            return 'pay_enabled выключен в настройках';
         }
 
-        if (! (bool) Setting::get('pay_test_only', false)) {
-            return true;
+        if ((string) Setting::get('yookassa_shop_id', '') === '') {
+            return 'не задан yookassa_shop_id';
         }
 
-        return (bool) $user?->is_admin;
+        if ((string) config('payments.yookassa.secret_key') === '') {
+            return 'не задан YOOKASSA_SECRET_KEY в .env (или кеш конфига устарел)';
+        }
+
+        if ((bool) Setting::get('pay_test_only', false) && ! (bool) $user?->is_admin) {
+            return $user
+                ? 'pay_test_only: пользователь не администратор'
+                : 'pay_test_only: пользователь не авторизован';
+        }
+
+        return null;
     }
 
     /**
@@ -85,6 +104,14 @@ class YooKassaService
 
         $confirmationUrl = $response->getConfirmation()?->getConfirmationUrl();
 
+        Log::info('Платёж ЮKassa создан', [
+            'order_id' => $order->id,
+            'yookassa_payment_id' => $response->getId(),
+            'status' => $response->getStatus(),
+            'amount' => $order->total_amount,
+            'has_confirmation_url' => (bool) $confirmationUrl,
+        ]);
+
         if (! $confirmationUrl) {
             throw new RuntimeException('ЮKassa не вернула ссылку для оплаты.');
         }
@@ -103,6 +130,11 @@ class YooKassaService
             NotificationEventType::PAYMENT_CANCELED,
         ], true);
 
+        Log::info('Webhook ЮKassa получен', [
+            'event' => $notification->getEvent(),
+            'yookassa_payment_id' => $notification->getObject()->getId(),
+        ]);
+
         if (! $isPaymentEvent) {
             return;
         }
@@ -112,6 +144,10 @@ class YooKassaService
             ->first();
 
         if (! $payment) {
+            Log::warning('Webhook ЮKassa: платёж не найден в базе', [
+                'yookassa_payment_id' => $notification->getObject()->getId(),
+            ]);
+
             return;
         }
 
@@ -125,6 +161,13 @@ class YooKassaService
     public function syncPayment(Payment $payment): Payment
     {
         $actual = $this->client()->getPaymentInfo($payment->yookassa_payment_id);
+
+        Log::info('Синхронизация платежа ЮKassa', [
+            'order_id' => $payment->order_id,
+            'yookassa_payment_id' => $payment->yookassa_payment_id,
+            'old_status' => $payment->status,
+            'new_status' => $actual->getStatus(),
+        ]);
 
         $payment->update([
             'status' => $actual->getStatus(),

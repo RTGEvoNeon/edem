@@ -35,12 +35,24 @@ class OrderController extends Controller
             'items.*.quantity' => 'required|integer|min:1|max:99',
         ]);
 
+        Log::info('Оформление заказа: запрос получен', [
+            'user_id' => Auth::id(),
+            'is_admin' => (bool) $request->user()?->is_admin,
+            'ip' => $request->ip(),
+            'items' => $validated['items'],
+        ]);
+
         $quantities = collect($validated['items'])->pluck('quantity', 'product_id');
 
         // Цены берём из базы, а не от клиента.
         $products = Product::query()->available()->whereIn('id', $quantities->keys())->get();
 
         if ($products->count() !== $quantities->count()) {
+            Log::warning('Оформление заказа: товары недоступны', [
+                'requested' => $quantities->keys()->all(),
+                'found' => $products->pluck('id')->all(),
+            ]);
+
             return response()->json([
                 'success' => false,
                 'message' => 'Некоторые товары недоступны для заказа. Обновите корзину и попробуйте снова.',
@@ -72,7 +84,16 @@ class OrderController extends Controller
             return $order;
         });
 
-        if (! $this->yooKassa->isPaymentAvailableFor($request->user())) {
+        $unavailableReason = $this->yooKassa->paymentUnavailableReason($request->user());
+
+        Log::info('Оформление заказа: заказ создан', [
+            'order_id' => $order->id,
+            'total_amount' => $order->total_amount,
+            'flow' => $unavailableReason === null ? 'оплата' : 'заявка без оплаты',
+            'reason' => $unavailableReason,
+        ]);
+
+        if ($unavailableReason !== null) {
             $this->notifier->notifyNewOrder($order, $productUrl);
 
             return response()->json([

@@ -22,6 +22,12 @@ class PaymentController extends Controller
     {
         $payment = $order->payment;
 
+        Log::info('Возврат из ЮKassa', [
+            'order_id' => $order->id,
+            'order_status' => $order->status,
+            'payment_status' => $payment?->status,
+        ]);
+
         // Не ждём вебхук: если платёж ещё в обработке, уточняем статус у ЮKassa.
         if ($payment && in_array($payment->status, ['pending', 'waiting_for_capture'], true)) {
             try {
@@ -53,6 +59,8 @@ class PaymentController extends Controller
      */
     public function retry(Order $order): RedirectResponse
     {
+        Log::info('Повторная попытка оплаты', ['order_id' => $order->id, 'order_status' => $order->status]);
+
         if ($order->status !== 'pending' && $order->status !== 'cancelled') {
             return redirect(URL::signedRoute('payment.return', ['order' => $order->id]));
         }
