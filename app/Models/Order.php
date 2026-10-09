@@ -31,7 +31,11 @@ class Order extends Model
         'total_amount' => 'decimal:2',
     ];
 
-    // Получить товары в заказе
+    /**
+     * Товары в заказе.
+     *
+     * @return HasMany<OrderItem, $this>
+     */
     public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class);

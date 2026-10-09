@@ -89,6 +89,7 @@ class YooKassaService
             ],
             'capture' => true,
             'description' => "Заказ №{$order->id}",
+            'receipt' => $this->buildReceipt($order),
             'metadata' => [
                 'order_id' => $order->id,
             ],
@@ -117,6 +118,54 @@ class YooKassaService
         }
 
         return $confirmationUrl;
+    }
+
+    /**
+     * Чек по 54-ФЗ: патент (tax_system_code 6), без НДС (vat_code 1).
+     *
+     * @return array<string, mixed>
+     */
+    public function buildReceipt(Order $order): array
+    {
+        $customer = ['full_name' => $order->customer_name];
+
+        if ($order->customer_email) {
+            $customer['email'] = $order->customer_email;
+        } else {
+            $customer['phone'] = $this->normalizePhone($order->customer_phone);
+        }
+
+        $items = $order->orderItems()->with('product')->get()->map(fn ($item) => [
+            'description' => Str::limit($item->product->name, 128, ''),
+            'quantity' => (string) $item->quantity,
+            'amount' => [
+                'value' => number_format((float) $item->price, 2, '.', ''),
+                'currency' => 'RUB',
+            ],
+            'vat_code' => 1,
+            'payment_mode' => 'full_payment',
+            'payment_subject' => 'commodity',
+        ])->all();
+
+        return [
+            'customer' => $customer,
+            'items' => $items,
+            'tax_system_code' => 6,
+        ];
+    }
+
+    /**
+     * Телефон в формате E.164 без «+»: 79991234567.
+     */
+    private function normalizePhone(string $phone): string
+    {
+        $digits = preg_replace('/\D/', '', $phone) ?? '';
+
+        if (strlen($digits) === 11 && $digits[0] === '8') {
+            $digits = '7'.substr($digits, 1);
+        }
+
+        return $digits;
     }
 
     public function handleWebhookNotification(array $payload): void
