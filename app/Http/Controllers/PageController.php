@@ -31,7 +31,7 @@ class PageController extends Controller
                 'city' => 'Брянск',
                 'region' => 'Брянская область',
                 'priceRange' => '₽₽',
-                'openingHours' => 'Mo-Su 09:00-00:00',
+                'openingHours' => 'Mo-Su 09:00-23:59',
             ])
             ->setBreadcrumbSchema([
                 ['name' => 'Главная', 'url' => url('/')],

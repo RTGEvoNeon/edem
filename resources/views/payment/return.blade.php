@@ -42,4 +42,33 @@
         </div>
     </div>
 </section>
+
+@if($state === 'succeeded' && $purchase)
+<script>
+    // Яндекс.Метрика: успешная оплата (один раз на заказ, даже при обновлении страницы)
+    (function () {
+        var key = 'ym_paid_{{ $order->id }}';
+        try {
+            if (localStorage.getItem(key)) return;
+            localStorage.setItem(key, '1');
+        } catch (e) {}
+
+        var purchase = @json($purchase);
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({
+            ecommerce: {
+                currencyCode: 'RUB',
+                purchase: {
+                    actionField: { id: String(purchase.id), revenue: purchase.revenue },
+                    products: purchase.products
+                }
+            }
+        });
+
+        if (typeof ym !== 'undefined') {
+            ym(104582209, 'reachGoal', 'order_paid');
+        }
+    })();
+</script>
+@endif
 @endsection

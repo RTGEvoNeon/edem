@@ -61,7 +61,7 @@
         <div class="col-span-2 h-80 rounded-3xl shadow-2xl overflow-hidden hover-lift">
             <img
                 src="{{ asset('images/main1.jpg') }}"
-                alt="Основной букет"
+                alt="Свежий букет от цветочной мастерской Эдемский сад в Брянске"
                 class="w-full h-full object-cover"
                 width="800"
                 height="400"

@@ -124,8 +124,6 @@ class SeoService
 
         $this->openGraph['og:image'] = $absoluteUrl;
         $this->openGraph['og:image:secure_url'] = $absoluteUrl;
-        $this->openGraph['og:image:width'] = '1200';
-        $this->openGraph['og:image:height'] = '630';
 
         if ($alt) {
             $this->openGraph['og:image:alt'] = $alt;
@@ -211,7 +209,7 @@ class SeoService
     {
         $schema = [
             '@context' => 'https://schema.org',
-            '@type' => 'LocalBusiness',
+            '@type' => 'Florist',
             'name' => $options['name'] ?? 'Эдемский сад',
             'image' => $options['image'] ?? url('/images/logo.jpg'),
             'description' => $options['description'] ?? 'Цветочная мастерская для особенных моментов. Свежие букеты с доставкой по Брянску',
@@ -229,7 +227,7 @@ class SeoService
             ],
             'url' => $options['url'] ?? url('/'),
             'priceRange' => $options['priceRange'] ?? '₽₽',
-            'openingHours' => $options['openingHours'] ?? 'Mo-Su 09:00-21:00',
+            'openingHours' => $options['openingHours'] ?? 'Mo-Su 09:00-23:59',
         ];
 
         // Удаляем null-координаты из geo и сам блок, если координат не осталось
@@ -284,7 +282,8 @@ class SeoService
 
         // Meta tags
         foreach ($this->meta as $name => $content) {
-            if ($name === 'title') {
+            // keywords игнорируют и Яндекс, и Google
+            if ($name === 'title' || $name === 'keywords') {
                 continue;
             }
             $html[] = sprintf('<meta name="%s" content="%s">', e($name), e($content));
