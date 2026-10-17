@@ -216,6 +216,7 @@ class SeoService
             'telephone' => $options['telephone'] ?? '+79532929246',
             'address' => [
                 '@type' => 'PostalAddress',
+                'streetAddress' => $options['street'] ?? 'ул. Академика Сахарова, 5',
                 'addressLocality' => $options['city'] ?? 'Брянск',
                 'addressRegion' => $options['region'] ?? 'Брянская область',
                 'addressCountry' => 'RU',
