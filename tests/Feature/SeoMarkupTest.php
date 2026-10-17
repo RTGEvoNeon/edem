@@ -17,6 +17,8 @@ class SeoMarkupTest extends TestCase
             ->assertOk()
             ->assertSee('"@type": "Florist"', false)
             ->assertSee('"streetAddress": "ул. Академика Сахарова, 5"', false)
+            ->assertSee('"latitude": 53.294228', false)
+            ->assertSee('"longitude": 34.25565', false)
             ->assertSee('"openingHours": "Mo-Su 09:00-23:59"', false);
     }
 

@@ -223,19 +223,13 @@ class SeoService
             ],
             'geo' => [
                 '@type' => 'GeoCoordinates',
-                'latitude' => $options['latitude'] ?? null,
-                'longitude' => $options['longitude'] ?? null,
+                'latitude' => $options['latitude'] ?? 53.294228,
+                'longitude' => $options['longitude'] ?? 34.255650,
             ],
             'url' => $options['url'] ?? url('/'),
             'priceRange' => $options['priceRange'] ?? '₽₽',
             'openingHours' => $options['openingHours'] ?? 'Mo-Su 09:00-23:59',
         ];
-
-        // Удаляем null-координаты из geo и сам блок, если координат не осталось
-        $schema['geo'] = array_filter($schema['geo'], fn ($value) => ! is_null($value));
-        if (count($schema['geo']) <= 1) {
-            unset($schema['geo']);
-        }
 
         $this->addSchema($schema);
 
