@@ -22,11 +22,11 @@ class ProductCategoryFilterTest extends TestCase
         $product = Product::factory()->create(['name' => 'Двойной букет', 'is_available' => true]);
         $product->categories()->attach([$mono->id, $wedding->id]);
 
-        $responseMono = $this->get('/products?category=mono-filter-test');
+        $responseMono = $this->get('/bukety/mono-filter-test');
         $responseMono->assertOk();
         $responseMono->assertSee('Двойной букет');
 
-        $responseWedding = $this->get('/products?category=wedding-filter-test');
+        $responseWedding = $this->get('/bukety/wedding-filter-test');
         $responseWedding->assertOk();
         $responseWedding->assertSee('Двойной букет');
     }
@@ -73,10 +73,10 @@ class ProductCategoryFilterTest extends TestCase
         $response = $this->get('/products');
 
         $response->assertOk();
-        // Название должно встретиться и во вкладке фильтра (Task 5), и в бейдже
-        // на карточке товара (Task 6) — ровно 2 раза.
+        // Название должно встретиться во вкладке фильтра (Task 5), в бейдже
+        // на карточке товара (Task 6) и в ссылке футера — ровно 3 раза.
         $occurrences = substr_count($response->getContent(), $categoryName);
-        $this->assertSame(2, $occurrences, 'Название категории должно быть и во вкладке фильтра, и на карточке товара');
+        $this->assertSame(3, $occurrences, 'Название категории должно быть во вкладке фильтра, на карточке товара и в футере');
     }
 
     public function test_catalog_page_does_not_n_plus_one_on_categories(): void
@@ -95,6 +95,7 @@ class ProductCategoryFilterTest extends TestCase
             fn ($q) => str_contains($q['query'], 'category_product')
         );
 
-        $this->assertLessThanOrEqual(2, $categoryQueries->count(), 'Ожидается не более 2 запросов к category_product (eager-load + whereHas), а не по одному на товар');
+        // eager-load + whereHas каталога + whereHas футера; главное — не по одному на товар
+        $this->assertLessThanOrEqual(3, $categoryQueries->count(), 'Ожидается не более 3 запросов к category_product, а не по одному на товар');
     }
 }

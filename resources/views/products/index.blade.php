@@ -18,6 +18,15 @@
                 </span>
             </div>
 
+            @if($activeCategory)
+                <h1 class="font-display text-3xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight text-balance animate-fade-in-up stagger-1">
+                    {{ $seoBlock['h1'] ?? $activeCategory->name.' с доставкой в Брянске' }}
+                </h1>
+
+                <p class="text-base sm:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed animate-fade-in-up stagger-2">
+                    {{ $seoBlock['lead'] ?? 'Каждый букет создан с любовью и вниманием к деталям' }}
+                </p>
+            @else
             <h1 class="font-display text-3xl sm:text-5xl lg:text-7xl font-bold text-gray-900 leading-tight text-balance animate-fade-in-up stagger-1">
                 Выберите
                 <span class="relative inline-block">
@@ -32,6 +41,7 @@
             <p class="text-base sm:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed animate-fade-in-up stagger-2">
                 Каждый букет создан с любовью и вниманием к деталям
             </p>
+            @endif
         </div>
 
         <!-- Фильтры -->
@@ -42,7 +52,7 @@
                 Все букеты
             </a>
             @foreach($categories as $category)
-                <a href="{{ route('products.index', ['category' => $category->key]) }}"
+                <a href="{{ route('products.category', ['category' => $category->key]) }}"
                    class="filter-btn {{ $currentCategory === $category->key ? 'active' : '' }} px-3 py-2 sm:px-6 sm:py-3 rounded-full font-medium text-xs sm:text-sm transition-all hover:scale-105 shadow-sm"
                    @if($currentCategory === $category->key) aria-current="page" @endif>
                     {{ $category->name }}
@@ -230,7 +240,6 @@
 </section>
 
 <!-- SEO-текст под каталогом -->
-@php($seoBlock = config('seo_texts.'.$currentCategory) ?? config('seo_texts.all'))
 @if($seoBlock)
 <section class="py-12 sm:py-16 bg-accent-50/40">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">

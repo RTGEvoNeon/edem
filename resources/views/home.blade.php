@@ -218,7 +218,7 @@
             </div>
 
             <div class="text-center mt-12">
-                <a href="{{ route('products.index', ['category' => $category->key]) }}" class="group inline-flex items-center gap-3 px-8 py-4 border-2 border-primary-400 text-primary-700 rounded-full font-semibold hover:bg-primary-50 transition-all hover:scale-105 shadow-sm">
+                <a href="{{ route('products.category', ['category' => $category->key]) }}" class="group inline-flex items-center gap-3 px-8 py-4 border-2 border-primary-400 text-primary-700 rounded-full font-semibold hover:bg-primary-50 transition-all hover:scale-105 shadow-sm">
                     <span>Смотреть все: {{ $category->name }}</span>
                     <svg class="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>

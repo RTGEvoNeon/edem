@@ -1,3 +1,9 @@
+@php
+    $footerCategories = \App\Models\Category::query()
+        ->whereHas('products', fn ($query) => $query->available())
+        ->orderBy('sort_order')
+        ->get(['id', 'key', 'name']);
+@endphp
 <!-- Footer -->
 <footer class="relative bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white overflow-hidden">
     <!-- Decorative elements -->
@@ -64,18 +70,12 @@
                         <span class="w-1.5 h-1.5 bg-primary-400 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
                         Все букеты
                     </a></li>
-                    <li><a href="/products?category=wedding" class="text-gray-300 hover:text-primary-400 transition-colors inline-flex items-center group">
+                    @foreach($footerCategories as $footerCategory)
+                    <li><a href="{{ route('products.category', ['category' => $footerCategory->key]) }}" class="text-gray-300 hover:text-primary-400 transition-colors inline-flex items-center group">
                         <span class="w-1.5 h-1.5 bg-primary-400 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                        Свадебные
+                        {{ $footerCategory->name }}
                     </a></li>
-                    <li><a href="/products?category=premium" class="text-gray-300 hover:text-primary-400 transition-colors inline-flex items-center group">
-                        <span class="w-1.5 h-1.5 bg-primary-400 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                        Премиум
-                    </a></li>
-                    <li><a href="/products?category=september1" class="text-gray-300 hover:text-primary-400 transition-colors inline-flex items-center group">
-                        <span class="w-1.5 h-1.5 bg-primary-400 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                        1 сентября
-                    </a></li>
+                    @endforeach
                     <!-- TODO: Страница "Собери свой букет" временно отключена -->
                     <!-- <li><a href="/custom-bouquet" class="text-gray-300 hover:text-primary-400 transition-colors inline-flex items-center group">
                         <span class="w-1.5 h-1.5 bg-primary-400 rounded-full mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>

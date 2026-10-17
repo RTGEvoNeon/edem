@@ -29,6 +29,7 @@ Route::get('/cart/products', [CartController::class, 'products'])->name('cart.pr
 // Каталог товаров
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/product/{slug}', [ProductController::class, 'show'])->name('products.show');
+Route::get('/bukety/{category:key}', [ProductController::class, 'category'])->name('products.category');
 
 // Оптовый раздел
 Route::get('/opt', [WholesaleController::class, 'index'])->name('wholesale.index');
