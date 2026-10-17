@@ -19,7 +19,7 @@ class OrderFactory extends Factory
      */
     public function definition(): array
     {
-        $statuses = ['pending', 'confirmed', 'preparing', 'ready', 'delivered', 'cancelled'];
+        $statuses = ['pending', 'confirmed', 'in_progress', 'delivered', 'cancelled'];
 
         return [
             'customer_name' => fake('ru_RU')->name(),

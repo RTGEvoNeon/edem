@@ -24,10 +24,22 @@
     <h3>Заказ</h3>
     <ul>
         <li><strong>Сумма:</strong> {{ $order->total_amount }} ₽</li>
+        @if($order->payment)
+            <li><strong>Оплата:</strong> {{ $order->payment->status === 'succeeded' ? 'оплачено онлайн' : $order->payment->status }}</li>
+        @endif
         @if(!empty($productUrl))
             <li><strong>Ссылка на товар:</strong> <a href="{{ $productUrl }}">{{ $productUrl }}</a></li>
         @endif
     </ul>
+
+    @if($order->orderItems->isNotEmpty())
+        <h3>Состав заказа</h3>
+        <ul>
+            @foreach($order->orderItems as $item)
+                <li>{{ $item->product?->name ?? 'Товар №'.$item->product_id }} — {{ $item->quantity }} × {{ $item->price }} ₽</li>
+            @endforeach
+        </ul>
+    @endif
 
     @if($order->notes)
         <h3>Комментарий клиента</h3>

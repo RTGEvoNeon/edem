@@ -17,6 +17,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => EnsureUserIsAdmin::class,
         ]);
+
+        $middleware->validateCsrfTokens(except: [
+            'payment/webhook/yookassa',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

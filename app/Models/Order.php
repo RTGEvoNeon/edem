@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\DB;
 
 class Order extends Model
@@ -30,10 +31,32 @@ class Order extends Model
         'total_amount' => 'decimal:2',
     ];
 
-    // Получить товары в заказе
+    /**
+     * Товары в заказе.
+     *
+     * @return HasMany<OrderItem, $this>
+     */
     public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    /**
+     * @return HasMany<Payment, $this>
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * Последняя попытка оплаты.
+     *
+     * @return HasOne<Payment, $this>
+     */
+    public function payment(): HasOne
+    {
+        return $this->hasOne(Payment::class)->latestOfMany();
     }
 
     // Получить общую сумму заказа

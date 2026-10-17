@@ -200,6 +200,7 @@
         mask-composite: exclude;
         border-radius: 2rem;
         opacity: 0.5;
+        pointer-events: none;
     }
 
     /* Типографика с особым характером */
@@ -739,6 +740,20 @@
                     <!-- Действия -->
                     <div class="flex flex-col sm:flex-row gap-4 mb-12">
                         <button
+                            type="button"
+                            onclick="addToCart(this)"
+                            data-product-id="{{ $product->id }}"
+                            data-product-name="{{ $product->name }}"
+                            data-product-slug="{{ $product->slug }}"
+                            data-product-price="{{ $product->price }}"
+                            data-product-image="{{ $product->main_image }}"
+                            aria-label="В корзину"
+                            title="В корзину"
+                            class="flex-1 py-4 rounded-full border-2 border-primary-500 text-primary-600 font-semibold text-lg hover:bg-primary-50 transition-all text-center flex items-center justify-center"
+                        >
+                            <span data-cart-label class="flex items-center justify-center"><svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg></span>
+                        </button>
+                        <button
                             onclick="openOrderModal()"
                             class="btn-organic flex-1 py-4 animated-gradient text-white font-semibold text-lg hover:glow-primary focus:outline-none focus:ring-4 focus:ring-primary-200 text-center"
                         >
@@ -865,7 +880,8 @@
         </div>
 
         <form id="order-form" class="space-y-4">
-            <input type="hidden" name="total_amount" value="{{ $product->price }}">
+            <input type="hidden" name="items[0][product_id]" value="{{ $product->id }}">
+            <input type="hidden" name="items[0][quantity]" value="1">
             <input type="hidden" name="product_url" value="{{ url('/product/' . $product->slug) }}">
 
             <div>
@@ -888,6 +904,16 @@
                     required
                     class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary-400 focus:ring-2 focus:ring-primary-200 transition-all"
                     placeholder="+7 (___) ___-__-__"
+                >
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <input
+                    type="email"
+                    name="customer_email"
+                    class="w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-primary-400 focus:ring-2 focus:ring-primary-200 transition-all"
+                    placeholder="Для чека и подтверждения заказа"
                 >
             </div>
 
@@ -923,7 +949,7 @@
                     type="submit"
                     class="btn-organic w-full py-4 animated-gradient text-white font-semibold text-lg hover:glow-primary focus:outline-none focus:ring-4 focus:ring-primary-200"
                 >
-                    Отправить заявку
+                    Оформить заказ
                 </button>
             </div>
         </form>
@@ -1191,13 +1217,18 @@
             const data = await response.json();
 
             if (data.success) {
-                document.getElementById('order-form').classList.add('hidden');
-                document.getElementById('order-success').classList.remove('hidden');
-
                 // Яндекс.Метрика: успешная отправка заказа
                 if (typeof ym !== 'undefined') {
                     ym(104582209, 'reachGoal', 'order_submitted');
                 }
+
+                if (data.payment_url) {
+                    window.location.href = data.payment_url;
+                    return;
+                }
+
+                document.getElementById('order-form').classList.add('hidden');
+                document.getElementById('order-success').classList.remove('hidden');
 
                 setTimeout(() => {
                     closeOrderModal();
@@ -1209,7 +1240,7 @@
             errorDiv.textContent = error.message;
             errorDiv.classList.remove('hidden');
             submitButton.disabled = false;
-            submitButton.textContent = 'Отправить заявку';
+            submitButton.textContent = 'Оформить заказ';
         }
     });
 </script>

@@ -2,6 +2,7 @@ import './bootstrap';
 import './mobile-menu';
 import './category-carousels';
 import 'swiper/css';
+import './phone-mask';
 
 import Alpine from 'alpinejs';
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductImportController;
 use App\Http\Controllers\ProfileController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\WholesaleController;
 use App\Http\Controllers\WholesaleImportController;
 use App\Http\Controllers\WholesaleOrderController;
+use App\Http\Controllers\YooKassaWebhookController;
 use Illuminate\Support\Facades\Route;
 
 // Статические страницы
@@ -23,6 +25,7 @@ Route::get('/privacy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/oferta', [PageController::class, 'oferta'])->name('oferta');
 
 Route::get('/cart', [CartController::class, 'cart'])->name('cart');
+Route::get('/cart/products', [CartController::class, 'products'])->name('cart.products');
 // Каталог товаров
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/product/{slug}', [ProductController::class, 'show'])->name('products.show');
@@ -34,6 +37,11 @@ Route::post('/opt/order/submit', [WholesaleOrderController::class, 'submit'])->n
 
 // Оформление заказа
 Route::post('/order/submit', [OrderController::class, 'submit'])->name('order.submit');
+
+// Оплата ЮKassa
+Route::get('/payment/return/{order}', [PaymentController::class, 'return'])->middleware('signed')->name('payment.return');
+Route::get('/payment/retry/{order}', [PaymentController::class, 'retry'])->middleware('signed')->name('payment.retry');
+Route::post('/payment/webhook/yookassa', [YooKassaWebhookController::class, 'handle'])->name('payment.webhook.yookassa');
 
 // Sitemap
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
