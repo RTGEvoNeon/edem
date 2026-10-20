@@ -6,6 +6,8 @@ namespace App\Providers;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
+use Laravel\Telescope\EntryType;
 use Laravel\Telescope\IncomingEntry;
 use Laravel\Telescope\Telescope;
 use Laravel\Telescope\TelescopeApplicationServiceProvider;
@@ -21,16 +23,35 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
 
         $this->hideSensitiveRequestDetails();
 
-        // $isLocal = $this->app->environment('local');
+        $isLocal = $this->app->environment('local');
 
-        // Telescope::filter(function (IncomingEntry $entry) use ($isLocal) {
-        //     return $isLocal ||
-        //            $entry->isReportableException() ||
-        //            $entry->isFailedRequest() ||
-        //            $entry->isFailedJob() ||
-        //            $entry->isScheduledTask() ||
-        //            $entry->hasMonitoredTag();
-        // });
+        // На проде пишем только нужное: ошибки и оформление заказа. Иначе таблица
+        // разрастается на гигабайты (просмотры, запросы и модели вручную отключены в .env).
+        Telescope::filter(function (IncomingEntry $entry) use ($isLocal): bool {
+            return $isLocal
+                || $entry->isReportableException()
+                || $entry->isFailedRequest()
+                || $entry->isFailedJob()
+                || $entry->isScheduledTask()
+                || $entry->hasMonitoredTag()
+                || $entry->type === EntryType::LOG        // ошибки и ход оформления заказа/оплаты (Log::info/error)
+                || $entry->type === EntryType::MAIL       // письма о заказах
+                || $this->isOrderFlowRequest($entry);
+        });
+    }
+
+    /**
+     * Запросы оформления заказа и оплаты: отправка заказа, возврат/повтор оплаты, webhook ЮKassa.
+     */
+    protected function isOrderFlowRequest(IncomingEntry $entry): bool
+    {
+        if ($entry->type !== EntryType::REQUEST) {
+            return false;
+        }
+
+        $uri = (string) ($entry->content['uri'] ?? '');
+
+        return Str::is(['/order/submit*', '/opt/order/submit*', '/payment/*'], $uri);
     }
 
     /**
