@@ -89,7 +89,7 @@ class PaymentControllerTest extends TestCase
         config(['mail.admin_emails' => ['admin@example.com']]);
 
         $this->mock(YooKassaService::class, function (MockInterface $mock) {
-            $mock->shouldReceive('isPaymentAvailableFor')->andReturn(true);
+            $mock->shouldReceive('paymentUnavailableReason')->andReturn(null);
             $mock->shouldReceive('createPayment')
                 ->once()
                 ->andReturn('https://yookassa.ru/checkout/payments/v2/contract?orderId=test');
@@ -108,7 +108,7 @@ class PaymentControllerTest extends TestCase
         Mail::fake();
 
         $this->mock(YooKassaService::class, function (MockInterface $mock) {
-            $mock->shouldReceive('isPaymentAvailableFor')->andReturn(true);
+            $mock->shouldReceive('paymentUnavailableReason')->andReturn(null);
             $mock->shouldReceive('createPayment')
                 ->once()
                 ->andThrow(new \RuntimeException('ЮKassa недоступна'));
