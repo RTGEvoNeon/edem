@@ -46,7 +46,6 @@ class WholesaleOrderController extends Controller
                 'product' => $product->name,
                 'quantity' => $quantity,
                 'total' => $total,
-                'customer' => $customerData['name'],
             ]);
 
             return response()->json([

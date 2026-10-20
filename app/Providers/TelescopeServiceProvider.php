@@ -63,7 +63,15 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
             return;
         }
 
-        Telescope::hideRequestParameters(['_token']);
+        // Персональные данные покупателей (розница и опт) в журнал не попадают.
+        Telescope::hideRequestParameters([
+            '_token',
+            'customer_name',
+            'customer_phone',
+            'customer_email',
+            'delivery_address',
+            'notes',
+        ]);
 
         Telescope::hideRequestHeaders([
             'cookie',
