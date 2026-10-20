@@ -10,6 +10,7 @@ use App\Models\Product;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -18,20 +19,55 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
-        $category = $this->validateCategory($request->query('category'));
-        $page = max(1, (int) $request->query('page', 1));
+        // Старые ссылки вида /products?category=wedding → постоянный редирект на посадочную страницу
+        $legacyCategory = $request->query('category');
+        if (is_string($legacyCategory) && $legacyCategory !== 'all'
+            && Category::query()->where('key', $legacyCategory)->exists()) {
+            return redirect()->route('products.category', array_filter([
+                'category' => $legacyCategory,
+                'page' => $request->query('page'),
+            ]), 301);
+        }
 
-        $this->setSeoForCatalog($category, $page);
+        $this->setSeoForCatalog(null, $this->currentPage($request));
 
+        return view('products.index', [
+            'products' => $this->getFilteredProducts(null),
+            'categories' => $this->getAvailableCategories(),
+            'currentCategory' => 'all',
+            'activeCategory' => null,
+            'seoBlock' => config('seo_texts.all'),
+        ]);
+    }
+
+    /**
+     * Посадочная страница категории: /bukety/{key}.
+     */
+    public function category(Request $request, Category $category): View
+    {
         $products = $this->getFilteredProducts($category);
+
+        $this->setSeoForCatalog($category, $this->currentPage($request));
+
+        // Пустую категорию не индексируем (тонкая страница), но URL оставляем рабочим
+        if ($products->isEmpty()) {
+            Seo::setRobots('noindex, follow');
+        }
 
         return view('products.index', [
             'products' => $products,
             'categories' => $this->getAvailableCategories(),
-            'currentCategory' => $category,
+            'currentCategory' => $category->key,
+            'activeCategory' => $category,
+            'seoBlock' => config('seo_texts.'.$category->key),
         ]);
+    }
+
+    private function currentPage(Request $request): int
+    {
+        return max(1, (int) $request->query('page', 1));
     }
 
     /**
@@ -51,71 +87,60 @@ class ProductController extends Controller
     }
 
     /**
-     * Валидация и нормализация категории.
+     * Получить товары каталога (всего или одной категории) с пагинацией.
      */
-    private function validateCategory(?string $category): string
-    {
-        if ($category === null || $category === 'all') {
-            return 'all';
-        }
-
-        $exists = Category::query()->where('key', $category)->exists();
-
-        return $exists ? $category : 'all';
-    }
-
-    /**
-     * Получить отфильтрованные товары с пагинацией.
-     */
-    private function getFilteredProducts(string $category): LengthAwarePaginator
+    private function getFilteredProducts(?Category $category): LengthAwarePaginator
     {
         $query = Product::available()->withImages()->with('categories');
 
-        if ($category !== 'all') {
-            $query->whereHas('categories', fn ($q) => $q->where('key', $category));
+        if ($category !== null) {
+            $query->whereHas('categories', fn ($q) => $q->where('categories.id', $category->id));
         }
 
         return $query->paginate(18)->withQueryString();
     }
 
     /**
-     * Установить SEO-данные для каталога.
+     * Установить SEO-данные для каталога или посадочной страницы категории.
      */
-    private function setSeoForCatalog(string $category, int $page): void
+    private function setSeoForCatalog(?Category $category, int $page): void
     {
-        $categoryName = $category === 'all'
-            ? 'Каталог'
-            : (Category::query()->where('key', $category)->value('name') ?? 'Каталог');
+        /** @var array<string, mixed> $texts */
+        $texts = $category !== null ? config('seo_texts.'.$category->key, []) : [];
 
-        $isFiltered = $category !== 'all';
-
-        $title = $isFiltered
-            ? "{$categoryName} — купить в Брянске"
+        $title = $category !== null
+            ? ($texts['title'] ?? "{$category->name} — купить в Брянске")
             : 'Каталог букетов';
 
         if ($page > 1) {
             $title .= " — страница {$page}";
         }
 
-        $description = $isFiltered
-            ? "{$categoryName} от цветочной мастерской Эдемский сад. Доставка по Брянску бесплатно."
+        $description = $category !== null
+            ? ($texts['description'] ?? "{$category->name} от цветочной мастерской Эдемский сад. Доставка по Брянску бесплатно.")
             : 'Каталог свежих букетов от цветочной мастерской Эдемский сад. Монобукеты и миксы от 2000₽. Доставка по Брянску бесплатно. Более 50 вариантов букетов.';
 
-        $canonicalParams = $isFiltered ? ['category' => $category] : [];
-        if ($page > 1) {
-            $canonicalParams['page'] = $page;
-        }
+        $canonicalParams = $page > 1 ? ['page' => $page] : [];
+        $canonicalUrl = $category !== null
+            ? route('products.category', ['category' => $category->key] + $canonicalParams)
+            : route('products.index', $canonicalParams);
 
-        $canonicalUrl = route('products.index', $canonicalParams);
+        $breadcrumbs = [
+            ['name' => 'Главная', 'url' => url('/')],
+            ['name' => 'Каталог', 'url' => route('products.index')],
+        ];
+        if ($category !== null) {
+            $breadcrumbs[] = [
+                'name' => $category->name,
+                'url' => route('products.category', ['category' => $category->key]),
+            ];
+        }
 
         Seo::setTitle($title)
             ->setDescription($description)
             ->setKeywords(['каталог цветов', 'купить букет', 'цены на букеты Брянск', 'свежие цветы'])
             ->setCanonical($canonicalUrl)
-            ->setBreadcrumbSchema([
-                ['name' => 'Главная', 'url' => url('/')],
-                ['name' => 'Каталог', 'url' => route('products.index')],
-            ]);
+            ->setBreadcrumbSchema($breadcrumbs);
 
         if ($page > 1) {
             Seo::setRobots('noindex, follow');
@@ -165,11 +190,15 @@ class ProductController extends Controller
             ])
             ->setCanonical(route('products.show', $product->slug))
             ->setType('product')
-            ->setBreadcrumbSchema([
+            ->setBreadcrumbSchema(array_values(array_filter([
                 ['name' => 'Главная', 'url' => url('/')],
                 ['name' => 'Каталог', 'url' => route('products.index')],
+                $firstCategory instanceof Category ? [
+                    'name' => $firstCategory->name,
+                    'url' => route('products.category', ['category' => $firstCategory->key]),
+                ] : null,
                 ['name' => $product->name, 'url' => route('products.show', $product->slug)],
-            ])
+            ])))
             ->setProductSchema(
                 name: $product->name,
                 description: $product->description ?? "Прекрасный букет {$product->name} от цветочной мастерской Эдемский сад",

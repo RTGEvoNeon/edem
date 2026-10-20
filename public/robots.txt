@@ -1,13 +1,7 @@
+# Яндекс и Google читают только свою группу User-agent, а группу "*" игнорируют,
+# поэтому отдельных групп Yandex/Googlebot здесь нет — все правила в одной группе.
 User-agent: *
 Allow: /
-
-# Разрешить индексацию основных страниц
-Allow: /products
-Allow: /opt
-Allow: /delivery
-Allow: /about
-Allow: /contacts
-Allow: /privacy
 
 # Запретить служебные страницы
 Disallow: /admin
@@ -18,11 +12,13 @@ Disallow: /cart
 Disallow: /dashboard
 Disallow: /order/submit
 Disallow: /opt/order/submit
+Disallow: /payment
 Disallow: /login
 Disallow: /register
 
 # Разрешить изображения
 Allow: /images/
+Allow: /storage/
 Allow: /*.jpg$
 Allow: /*.png$
 Allow: /*.webp$
@@ -33,17 +29,6 @@ Allow: /favicon-*.png
 Allow: /apple-touch-icon.png
 Allow: /android-chrome-*.png
 
-# Sitemap (используем Punycode для международного домена)
-Sitemap: https://xn----8sbkccshgr4ce9k.xn--p1ai/sitemap.xml
-
-# Специальные правила для Яндекса
-User-agent: Yandex
-Allow: /
-
-# Специальные правила для Google
-User-agent: Googlebot
-Allow: /
-
 # Запретить плохих ботов
 User-agent: AhrefsBot
 Disallow: /
@@ -53,3 +38,9 @@ Disallow: /
 
 User-agent: MJ12bot
 Disallow: /
+
+# Sitemap (используем Punycode для международного домена)
+Sitemap: https://xn----8sbkccshgr4ce9k.xn--p1ai/sitemap.xml
+
+# Яндекс: не считать страницы с метками рекламы дублями
+Clean-param: utm_source&utm_medium&utm_campaign&utm_content&utm_term&yclid&ysclid&_openstat&from /

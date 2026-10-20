@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\WholesaleProduct;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
 
 class SitemapController extends Controller
 {
@@ -95,6 +98,28 @@ class SitemapController extends Controller
             $sitemap .= "    <lastmod>{$page['lastmod']}</lastmod>\n";
             $sitemap .= "    <changefreq>{$page['changefreq']}</changefreq>\n";
             $sitemap .= "    <priority>{$page['priority']}</priority>\n";
+            $sitemap .= "  </url>\n";
+        }
+
+        // Посадочные страницы категорий (только с доступными товарами)
+        $categories = Category::query()
+            ->whereHas('products', function (Builder $query): Builder {
+                /** @var Builder<Product> $query */
+                return $query->available();
+            })
+            ->orderBy('sort_order')
+            ->get();
+
+        foreach ($categories as $category) {
+            $lastmod = Product::available()
+                ->whereHas('categories', fn ($query) => $query->where('categories.id', $category->id))
+                ->max('updated_at') ?? $catalogLastmod;
+
+            $sitemap .= "  <url>\n";
+            $sitemap .= '    <loc>'.$this->punycodeUrl('/bukety/'.rawurlencode($category->key))."</loc>\n";
+            $sitemap .= '    <lastmod>'.Carbon::parse($lastmod)->toAtomString()."</lastmod>\n";
+            $sitemap .= "    <changefreq>weekly</changefreq>\n";
+            $sitemap .= "    <priority>0.9</priority>\n";
             $sitemap .= "  </url>\n";
         }
 

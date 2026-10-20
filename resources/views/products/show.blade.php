@@ -864,7 +864,7 @@
 
 <!-- Zoom overlay -->
 <div id="zoom-overlay" class="zoom-overlay fixed inset-0 z-50 hidden items-center justify-center p-4" onclick="closeZoom()">
-    <img id="zoom-image" src="" alt="Zoom" class="max-w-full max-h-full object-contain rounded-3xl shadow-2xl">
+    <img id="zoom-image" src="" alt="{{ $product->name }} — увеличенное фото" class="max-w-full max-h-full object-contain rounded-3xl shadow-2xl">
 </div>
 
 <!-- Модальное окно заказа -->

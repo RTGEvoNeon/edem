@@ -1,7 +1,10 @@
 FROM php:8.3-fpm
 
-# Устанавливаем расширения
-RUN apt-get update && apt-get install -y \
+# Устанавливаем расширения.
+# Пакеты берём с зеркала Яндекса: с сервера deb.debian.org из контейнера отдаётся
+# со скоростью ~30 КБ/с и сборка образа зависает (зеркало Яндекса — ~10 МБ/с).
+RUN sed -i 's|http://deb.debian.org|http://mirror.yandex.ru|g' /etc/apt/sources.list.d/debian.sources \
+    && apt-get update && apt-get install -y \
     libpng-dev libjpeg-dev libwebp-dev libfreetype6-dev libzip-dev libicu-dev zip git unzip curl \
     && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install pdo pdo_mysql gd zip intl exif

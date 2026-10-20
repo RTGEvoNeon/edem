@@ -138,6 +138,29 @@ class PaymentControllerTest extends TestCase
             ->assertSee('оплачен');
     }
 
+    public function test_return_page_sends_paid_goal_and_purchase_to_metrika_for_paid_order(): void
+    {
+        $product = Product::factory()->create(['name' => 'Тестовый букет', 'price' => 100]);
+        $order = Order::factory()->create(['status' => 'confirmed']);
+        $order->orderItems()->create(['product_id' => $product->id, 'quantity' => 2, 'price' => 100]);
+
+        $this->get(URL::signedRoute('payment.return', ['order' => $order->id]))
+            ->assertOk()
+            ->assertSee("reachGoal', 'order_paid'", false)
+            ->assertSee('"quantity":2', false)
+            ->assertSee('"id":"'.$product->id.'"', false)
+            ->assertSee('ym_paid_'.$order->id, false);
+    }
+
+    public function test_return_page_does_not_send_paid_goal_when_payment_canceled(): void
+    {
+        $order = Order::factory()->create(['status' => 'cancelled']);
+
+        $this->get(URL::signedRoute('payment.return', ['order' => $order->id]))
+            ->assertOk()
+            ->assertDontSee('order_paid', false);
+    }
+
     public function test_return_page_syncs_pending_payment_with_yookassa(): void
     {
         $order = Order::factory()->create(['status' => 'pending']);

@@ -50,8 +50,33 @@ class PaymentController extends Controller
         return view('payment.return', [
             'order' => $order,
             'state' => $state,
+            'purchase' => $state === 'succeeded' ? $this->purchaseData($order) : null,
             'retryUrl' => URL::signedRoute('payment.retry', ['order' => $order->id]),
         ]);
+    }
+
+    /**
+     * Данные покупки для ecommerce Яндекс.Метрики.
+     *
+     * @return array{id: int, revenue: float, products: list<array<string, mixed>>}
+     */
+    private function purchaseData(Order $order): array
+    {
+        $order->loadMissing('orderItems.product');
+
+        return [
+            'id' => $order->id,
+            'revenue' => (float) $order->total_amount,
+            'products' => $order->orderItems
+                ->map(fn ($item): array => [
+                    'id' => (string) $item->product_id,
+                    'name' => $item->product->name,
+                    'price' => (float) $item->price,
+                    'quantity' => (int) $item->quantity,
+                ])
+                ->values()
+                ->all(),
+        ];
     }
 
     /**

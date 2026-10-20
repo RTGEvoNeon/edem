@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\FeedController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\PaymentController;
@@ -29,6 +30,7 @@ Route::get('/cart/products', [CartController::class, 'products'])->name('cart.pr
 // Каталог товаров
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/product/{slug}', [ProductController::class, 'show'])->name('products.show');
+Route::get('/bukety/{category:key}', [ProductController::class, 'category'])->name('products.category');
 
 // Оптовый раздел
 Route::get('/opt', [WholesaleController::class, 'index'])->name('wholesale.index');
@@ -45,6 +47,9 @@ Route::post('/payment/webhook/yookassa', [YooKassaWebhookController::class, 'han
 
 // Sitemap
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+
+// YML-фид для Яндекс Бизнеса и товарных кампаний Директа
+Route::get('/feed/yandex.yml', [FeedController::class, 'yandex'])->name('feed.yandex');
 
 // TODO: Форма заказа кастомного букета (временно отключена)
 // Route::get('/custom-bouquet', function () {
