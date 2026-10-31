@@ -319,16 +319,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function calculatePrice() {
         const quantity = parseInt(quantityInput.value) || 0;
-        let pricePerUnit = 0;
+        let pricePerUnit = tiers[0].price;
 
         // Определяем ценовой уровень
-        if (quantity >= 10000) {
-            pricePerUnit = tiers[2].price;
-        } else if (quantity >= 5000) {
-            pricePerUnit = tiers[1].price;
-        } else {
-            pricePerUnit = tiers[0].price;
-        }
+        tiers.forEach((tier) => {
+            if (quantity >= tier.min_quantity) {
+                pricePerUnit = tier.price;
+            }
+        });
 
         const total = pricePerUnit * quantity;
 

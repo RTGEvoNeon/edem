@@ -54,16 +54,19 @@
                 <ol class="list-decimal list-inside space-y-2 text-blue-800">
                     <li>Скачайте шаблон Excel файла (кнопка ниже)</li>
                     <li>Заполните файл данными об оптовых товарах</li>
-                    <li>Обязательные колонки: <strong>название</strong>, <strong>slug</strong>, <strong>цены для трёх уровней</strong></li>
+                    <li>Обязательные колонки: <strong>название</strong>, <strong>slug</strong>, <strong>цены для шести уровней</strong></li>
                     <li>Загрузите заполненный файл на этой странице</li>
                 </ol>
 
                 <div class="mt-4 p-3 bg-blue-100 rounded-lg">
                     <p class="text-sm text-blue-900 font-medium mb-2">Ценовые уровни:</p>
                     <ul class="text-sm text-blue-800 space-y-1">
-                        <li>• <strong>price_tier_1</strong> — для заказов 1000-4999 шт</li>
-                        <li>• <strong>price_tier_2</strong> — для заказов 5000-9999 шт</li>
-                        <li>• <strong>price_tier_3</strong> — для заказов от 10000 шт</li>
+                        <li>• <strong>price_tier_1</strong> — для заказов до 5000 шт</li>
+                        <li>• <strong>price_tier_2</strong> — для заказов 5020-10000 шт</li>
+                        <li>• <strong>price_tier_3</strong> — для заказов 10020-30000 шт</li>
+                        <li>• <strong>price_tier_4</strong> — для заказов 30020-50000 шт</li>
+                        <li>• <strong>price_tier_5</strong> — для заказов 50020-100000 шт</li>
+                        <li>• <strong>price_tier_6</strong> — для заказов от 100020 шт</li>
                     </ul>
                 </div>
 

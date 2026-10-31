@@ -64,18 +64,27 @@ class WholesaleControllerTest extends TestCase
     {
         // Arrange
         $product = WholesaleProduct::factory()->create([
-            'price_tier_1' => 50,
-            'price_tier_2' => 45,
-            'price_tier_3' => 40,
+            'price_tier_1' => 59,
+            'price_tier_2' => 58,
+            'price_tier_3' => 57,
+            'price_tier_4' => 56,
+            'price_tier_5' => 55,
+            'price_tier_6' => 54,
         ]);
 
         // Act & Assert
-        $this->assertEquals(50, $product->getPriceForQuantity(1000));
-        $this->assertEquals(50, $product->getPriceForQuantity(4999));
-        $this->assertEquals(45, $product->getPriceForQuantity(5000));
-        $this->assertEquals(45, $product->getPriceForQuantity(9999));
-        $this->assertEquals(40, $product->getPriceForQuantity(10000));
-        $this->assertEquals(40, $product->getPriceForQuantity(50000));
+        $this->assertEquals(59, $product->getPriceForQuantity(1000));
+        $this->assertEquals(59, $product->getPriceForQuantity(5000));
+        $this->assertEquals(58, $product->getPriceForQuantity(5020));
+        $this->assertEquals(58, $product->getPriceForQuantity(10000));
+        $this->assertEquals(57, $product->getPriceForQuantity(10020));
+        $this->assertEquals(57, $product->getPriceForQuantity(30000));
+        $this->assertEquals(56, $product->getPriceForQuantity(30020));
+        $this->assertEquals(56, $product->getPriceForQuantity(50000));
+        $this->assertEquals(55, $product->getPriceForQuantity(50020));
+        $this->assertEquals(55, $product->getPriceForQuantity(100000));
+        $this->assertEquals(54, $product->getPriceForQuantity(100020));
+        $this->assertEquals(54, $product->min_price);
     }
 
     public function test_wholesale_order_validation_requires_minimum_quantity(): void

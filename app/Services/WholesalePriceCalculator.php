@@ -57,7 +57,7 @@ class WholesalePriceCalculator
         $total = $this->calculateTotal($product, $quantity);
 
         // Определяем текущий ценовой уровень
-        $tier = $this->getTierForQuantity($quantity);
+        $tier = $this->getTierForQuantity($product, $quantity);
 
         return [
             'product_name' => $product->name,
@@ -72,18 +72,18 @@ class WholesalePriceCalculator
     }
 
     /**
-     * Определить ценовой уровень для количества
+     * Определить номер ценового уровня для количества
      */
-    private function getTierForQuantity(int $quantity): int
+    private function getTierForQuantity(WholesaleProduct $product, int $quantity): int
     {
-        if ($quantity >= 10000) {
-            return 3;
+        $level = 1;
+
+        foreach ($product->getTierInfo() as $index => $tier) {
+            if ($quantity >= $tier['min_quantity']) {
+                $level = $index + 1;
+            }
         }
 
-        if ($quantity >= 5000) {
-            return 2;
-        }
-
-        return 1;
+        return $level;
     }
 }

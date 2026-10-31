@@ -38,6 +38,9 @@ class WholesaleProductsImport implements ToModel, WithCalculatedFormulas, WithHe
             'price_tier_1' => (float) ($row['price_tier_1'] ?? 0),
             'price_tier_2' => (float) ($row['price_tier_2'] ?? 0),
             'price_tier_3' => (float) ($row['price_tier_3'] ?? 0),
+            'price_tier_4' => (float) ($row['price_tier_4'] ?? 0),
+            'price_tier_5' => (float) ($row['price_tier_5'] ?? 0),
+            'price_tier_6' => (float) ($row['price_tier_6'] ?? 0),
             'min_quantity' => (int) ($row['min_quantity'] ?? 1000),
             'is_available' => isset($row['is_available']) ? (bool) $row['is_available'] : true,
         ];

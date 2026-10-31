@@ -17,6 +17,9 @@ use Illuminate\Support\Facades\Storage;
  * @property float $price_tier_1
  * @property float $price_tier_2
  * @property float $price_tier_3
+ * @property float $price_tier_4
+ * @property float $price_tier_5
+ * @property float $price_tier_6
  * @property int $min_quantity
  * @property bool $is_available
  * @property-read float $min_price
@@ -34,6 +37,9 @@ class WholesaleProduct extends Model
         'price_tier_1',
         'price_tier_2',
         'price_tier_3',
+        'price_tier_4',
+        'price_tier_5',
+        'price_tier_6',
         'min_quantity',
         'is_available',
     ];
@@ -42,6 +48,9 @@ class WholesaleProduct extends Model
         'price_tier_1' => 'float',
         'price_tier_2' => 'float',
         'price_tier_3' => 'float',
+        'price_tier_4' => 'float',
+        'price_tier_5' => 'float',
+        'price_tier_6' => 'float',
         'min_quantity' => 'integer',
         'is_available' => 'boolean',
     ];
@@ -59,50 +68,43 @@ class WholesaleProduct extends Model
      */
     public function getPriceForQuantity(int $quantity): float
     {
-        if ($quantity >= 10000) {
-            return $this->price_tier_3;
+        $price = $this->price_tier_1;
+
+        foreach ($this->getTierInfo() as $tier) {
+            if ($quantity >= $tier['min_quantity']) {
+                $price = $tier['price'];
+            }
         }
 
-        if ($quantity >= 5000) {
-            return $this->price_tier_2;
-        }
-
-        return $this->price_tier_1;
+        return $price;
     }
 
     /**
      * Получить информацию о всех ценовых уровнях
+     *
+     * min_quantity — с какого количества действует цена (включительно).
+     * Количества в прайсе кратны 20, поэтому «до 5 000» и «5 020–10 000» не оставляют пробелов.
+     *
+     * @return array<int, array{min_quantity: int, max_quantity: int|null, price: float, label: string}>
      */
     public function getTierInfo(): array
     {
         return [
-            [
-                'min_quantity' => 1000,
-                'max_quantity' => 4999,
-                'price' => $this->price_tier_1,
-                'label' => '1000-4999 шт',
-            ],
-            [
-                'min_quantity' => 5000,
-                'max_quantity' => 9999,
-                'price' => $this->price_tier_2,
-                'label' => '5000-9999 шт',
-            ],
-            [
-                'min_quantity' => 10000,
-                'max_quantity' => null,
-                'price' => $this->price_tier_3,
-                'label' => '10000+ шт',
-            ],
+            ['min_quantity' => 1, 'max_quantity' => 5000, 'price' => $this->price_tier_1, 'label' => 'до 5 000 шт'],
+            ['min_quantity' => 5001, 'max_quantity' => 10000, 'price' => $this->price_tier_2, 'label' => '5 020 – 10 000 шт'],
+            ['min_quantity' => 10001, 'max_quantity' => 30000, 'price' => $this->price_tier_3, 'label' => '10 020 – 30 000 шт'],
+            ['min_quantity' => 30001, 'max_quantity' => 50000, 'price' => $this->price_tier_4, 'label' => '30 020 – 50 000 шт'],
+            ['min_quantity' => 50001, 'max_quantity' => 100000, 'price' => $this->price_tier_5, 'label' => '50 020 – 100 000 шт'],
+            ['min_quantity' => 100001, 'max_quantity' => null, 'price' => $this->price_tier_6, 'label' => 'от 100 020 шт'],
         ];
     }
 
     /**
-     * Получить минимальную цену (для tier 3)
+     * Получить минимальную цену (для последнего уровня)
      */
     public function getMinPriceAttribute(): float
     {
-        return $this->price_tier_3;
+        return $this->price_tier_6;
     }
 
     /**
