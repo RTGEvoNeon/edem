@@ -147,18 +147,24 @@ class WholesaleProduct extends Model
 
         $files = Storage::disk('public')->files($directory);
         $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-        $images = [];
+        $byName = [];
 
         foreach ($files as $file) {
             $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-            if (in_array($extension, $imageExtensions)) {
-                $images[] = Storage::url($file);
+            if (! in_array($extension, $imageExtensions)) {
+                continue;
+            }
+
+            // Одно фото может лежать в нескольких форматах (1.jpg и 1.webp) — берём одно, предпочитая webp
+            $name = pathinfo($file, PATHINFO_FILENAME);
+            if (! isset($byName[$name]) || $extension === 'webp') {
+                $byName[$name] = $file;
             }
         }
 
         // Сортируем по имени файла
-        sort($images);
+        ksort($byName);
 
-        return $images;
+        return array_map(fn (string $file) => Storage::url($file), array_values($byName));
     }
 }
