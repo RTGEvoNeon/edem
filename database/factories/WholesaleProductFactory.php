@@ -29,9 +29,12 @@ class WholesaleProductFactory extends Factory
         return [
             'name' => $name,
             'slug' => Str::slug($name).'-'.fake()->unique()->numberBetween(1, 999),
-            'price_tier_1' => fake()->numberBetween(45, 55),
-            'price_tier_2' => fake()->numberBetween(40, 48),
-            'price_tier_3' => fake()->numberBetween(35, 43),
+            'price_tier_1' => 59,
+            'price_tier_2' => 58,
+            'price_tier_3' => 57,
+            'price_tier_4' => 56,
+            'price_tier_5' => 55,
+            'price_tier_6' => 54,
             'min_quantity' => 1000,
             'is_available' => true,
         ];
