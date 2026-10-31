@@ -47,6 +47,50 @@
     </div>
 </section>
 
+<!-- Прайс на тюльпаны -->
+@php
+    $priceTiers = [
+        ['label' => 'от 100 020 шт.', 'price' => 54],
+        ['label' => '50 020 – 100 000 шт.', 'price' => 55],
+        ['label' => '30 020 – 50 000 шт.', 'price' => 56],
+        ['label' => '10 020 – 30 000 шт.', 'price' => 57],
+        ['label' => '5 020 – 10 000 шт.', 'price' => 58],
+        ['label' => 'до 5 000 шт.', 'price' => 59],
+    ];
+@endphp
+<section class="relative py-8 sm:py-16 bg-white">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold-100 text-gold-700 font-medium text-sm">
+                🌷 Актуальный прайс
+            </span>
+            <h2 class="font-display text-3xl sm:text-5xl font-bold text-gray-900 mt-4">
+                Цена на тюльпаны
+            </h2>
+            <p class="text-base sm:text-xl text-gray-500 mt-3">Чем больше объём — тем выгоднее цена за штуку</p>
+        </div>
+
+        <ul class="mt-8 sm:mt-12 border-t border-sage-200">
+            @foreach($priceTiers as $tier)
+                <li class="flex items-baseline justify-between gap-4 sm:gap-6 py-4 sm:py-6 border-b border-sage-200">
+                    <span class="text-lg sm:text-3xl text-gray-700 tabular-nums">{{ $tier['label'] }}</span>
+                    <span class="flex-1 border-b-2 border-dotted border-sage-300 translate-y-[-6px]"></span>
+                    <span class="font-sans text-2xl sm:text-5xl font-bold tabular-nums bg-gradient-to-r from-sage-600 to-sage-500 bg-clip-text text-transparent">
+                        {{ $tier['price'] }}<span class="price-currency">₽</span>
+                    </span>
+                </li>
+            @endforeach
+        </ul>
+
+        <div class="mt-8 sm:mt-10 flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-sage-600 via-sage-500 to-gold-600 px-6 py-4 sm:py-5 text-white font-semibold text-sm sm:text-xl tracking-wide">
+            <svg class="w-5 h-5 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h11v9H3zM14 10h4l3 3v3h-7zM7 19a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM17 19a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"></path>
+            </svg>
+            ВОЗМОЖНА ДОСТАВКА
+        </div>
+    </div>
+</section>
+
 <!-- Каталог оптовых товаров -->
 <section class="py-8 sm:py-16 bg-white relative">
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
