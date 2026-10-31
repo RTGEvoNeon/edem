@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature;
 
+use App\Mail\WholesaleOrderMail;
 use App\Models\WholesaleProduct;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class WholesaleControllerTest extends TestCase
@@ -124,5 +126,29 @@ class WholesaleControllerTest extends TestCase
         // Assert
         $response->assertStatus(200);
         $response->assertJson(['success' => true]);
+    }
+
+    public function test_wholesale_order_sends_email_to_admins(): void
+    {
+        // Arrange
+        Mail::fake();
+        config(['mail.admin_emails' => ['admin@example.com']]);
+        WholesaleProduct::factory()->create(['slug' => 'test-product', 'name' => 'Outlook']);
+
+        // Act
+        $this->postJson('/opt/order/submit', [
+            'product_slug' => 'test-product',
+            'quantity' => 6000,
+            'customer_name' => 'Test Customer',
+            'customer_phone' => '+7 999 123-45-67',
+        ])->assertOk();
+
+        // Assert
+        Mail::assertSent(WholesaleOrderMail::class, function (WholesaleOrderMail $mail) {
+            return $mail->hasTo('admin@example.com')
+                && $mail->quantity === 6000
+                && $mail->pricePerUnit === 58.0
+                && $mail->total === 348000.0;
+        });
     }
 }

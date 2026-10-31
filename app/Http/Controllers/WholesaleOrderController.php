@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\WholesaleOrderRequest;
 use App\Models\WholesaleProduct;
+use App\Services\OrderNotifier;
 use App\Services\WholesalePriceCalculator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
@@ -14,6 +15,7 @@ class WholesaleOrderController extends Controller
 {
     public function __construct(
         private readonly WholesalePriceCalculator $priceCalculator,
+        private readonly OrderNotifier $notifier,
     ) {}
 
     /**
@@ -40,6 +42,8 @@ class WholesaleOrderController extends Controller
                 'phone' => $validated['customer_phone'],
                 'notes' => $validated['notes'] ?? '',
             ];
+
+            $this->notifier->notifyWholesaleOrder($product, $quantity, $pricePerUnit, $total, $customerData);
 
             // Логируем успешный заказ
             Log::info('Wholesale order submitted', [

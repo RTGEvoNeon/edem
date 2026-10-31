@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Mail\NewOrderMail;
+use App\Mail\WholesaleOrderMail;
 use App\Models\Order;
+use App\Models\WholesaleProduct;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
@@ -27,6 +29,30 @@ class OrderNotifier
         } catch (\Throwable $e) {
             Log::error('Не удалось отправить письмо о новом заказе', [
                 'order_id' => $order->id,
+                'recipients' => $adminEmails,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /**
+     * Отправляет администраторам письмо об оптовой заявке. Ошибки отправки не прерывают оформление.
+     *
+     * @param  array{name: string, phone: string, notes: string}  $customer
+     */
+    public function notifyWholesaleOrder(WholesaleProduct $product, int $quantity, float $pricePerUnit, float $total, array $customer): void
+    {
+        $adminEmails = (array) config('mail.admin_emails', []);
+
+        if ($adminEmails === []) {
+            return;
+        }
+
+        try {
+            Mail::to($adminEmails)->send(new WholesaleOrderMail($product, $quantity, $pricePerUnit, $total, $customer));
+        } catch (\Throwable $e) {
+            Log::error('Не удалось отправить письмо об оптовой заявке', [
+                'product' => $product->name,
                 'recipients' => $adminEmails,
                 'error' => $e->getMessage(),
             ]);
