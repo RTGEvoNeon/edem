@@ -20,6 +20,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
  * @property string $name
  * @property string $slug
  * @property string|null $description
+ * @property string|null $source_url
  * @property float $price
  * @property string $category
  * @property bool $is_available
@@ -44,6 +45,7 @@ class Product extends Model implements HasMedia
         'name',
         'slug',
         'description',
+        'source_url',
         'composition',
         'size',
         'care_instructions',

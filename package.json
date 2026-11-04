@@ -5,7 +5,8 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "flowwow:fetch": "node scripts/flowwow-fetch.mjs"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.1.18",
