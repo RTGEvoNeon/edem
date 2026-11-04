@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@push('head')
+    <meta name="robots" content="noindex, nofollow">
+@endpush
+
 @if($state === 'pending')
     @push('head')
         <meta http-equiv="refresh" content="5">
@@ -44,6 +48,7 @@
 </section>
 
 @if($state === 'succeeded' && $purchase)
+@push('scripts')
 <script>
     // Яндекс.Метрика: успешная оплата (один раз на заказ, даже при обновлении страницы)
     (function () {
@@ -70,5 +75,6 @@
         }
     })();
 </script>
+@endpush
 @endif
 @endsection

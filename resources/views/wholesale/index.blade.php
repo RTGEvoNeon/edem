@@ -26,7 +26,7 @@
                         <path d="M2 9C50 3 100 1 150 2C200 3 250 5 298 9" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
                     </svg>
                 </span>
-                от производителя
+                в Брянске
             </h1>
 
             <p class="text-base sm:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed animate-fade-in-up stagger-2">
@@ -58,14 +58,14 @@
         ['label' => 'до 5 000 шт.', 'price' => 59],
     ];
 @endphp
-<section class="relative py-8 sm:py-16 bg-white">
+<section id="price" class="relative py-8 sm:py-16 bg-white">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
             <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gold-100 text-gold-700 font-medium text-sm">
                 🌷 Актуальный прайс
             </span>
             <h2 class="font-display text-3xl sm:text-5xl font-bold text-gray-900 mt-4">
-                Цена на тюльпаны
+                Прайс на тюльпаны оптом
             </h2>
             <p class="text-base sm:text-xl text-gray-500 mt-3">Чем больше объём — тем выгоднее цена за штуку</p>
         </div>
@@ -92,8 +92,9 @@
 </section>
 
 <!-- Каталог оптовых товаров -->
-<section class="py-8 sm:py-16 bg-white relative">
+<section id="assortment" class="py-8 sm:py-16 bg-white relative">
     <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <h2 class="font-display text-3xl sm:text-4xl font-bold text-gray-900 mb-6">Сорта тюльпанов для оптового заказа</h2>
         <div id="products-grid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
             @forelse($products as $product)
                 <article class="product-card group flex flex-col bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-sage-200/50 shadow-lg hover-lift transition-all duration-500"
@@ -287,6 +288,23 @@
                 <a href="/" class="inline-flex items-center gap-3 px-8 py-4 bg-white/10 backdrop-blur-sm text-white rounded-full font-semibold border-2 border-white/30 hover:bg-white/20 transition-all">
                     <span>На главную</span>
                 </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-10 sm:py-16 bg-sage-50">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+        <h2 class="font-display text-3xl font-bold text-gray-900">Как купить тюльпаны оптом</h2>
+        <p class="text-gray-700 leading-relaxed">Выберите сорт в <a href="#assortment" class="text-sage-700 underline">каталоге с фотографиями</a> и откройте его карточку. В ней можно рассчитать стоимость партии по количеству и отправить заявку. Минимальный заказ — от 1000 штук; точный минимум указан в карточке сорта.</p>
+        <div class="grid sm:grid-cols-2 gap-6">
+            <div class="space-y-3">
+                <h3 class="font-display text-xl font-semibold text-gray-900">От чего зависит оптовая цена?</h3>
+                <p class="text-gray-700 leading-relaxed">Цена за штуку зависит от объёма партии. В <a href="#price" class="text-sage-700 underline">прайсе</a> указаны шесть уровней: от 59 ₽ при заказе до 5000 штук до 54 ₽ при заказе от 100 020 штук. Расчёт для выбранного количества доступен в карточке сорта.</p>
+            </div>
+            <div class="space-y-3">
+                <h3 class="font-display text-xl font-semibold text-gray-900">Как согласовать ассортимент и доставку?</h3>
+                <p class="text-gray-700 leading-relaxed">Укажите сорт, количество и контакты в заявке. Мы свяжемся с вами, чтобы подтвердить наличие и согласовать условия получения. Возможность доставки, дату и стоимость уточните до подтверждения заказа.</p>
             </div>
         </div>
     </div>

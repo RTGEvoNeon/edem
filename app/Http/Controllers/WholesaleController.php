@@ -38,10 +38,13 @@ class WholesaleController extends Controller
             ->firstOrFail();
 
         // SEO для страницы товара
-        $title = $product->name.' — оптовая продажа в Брянске';
+        $productName = str_contains(mb_strtolower($product->name), 'тюльпан')
+            ? $product->name
+            : 'Тюльпаны '.$product->name;
+        $title = $productName.' оптом в Брянске — цены';
         $minPrice = number_format($product->min_price, 0, '', ' ');
 
-        $description = "Оптовая продажа тюльпанов {$product->name} от {$minPrice}₽/шт. Минимальный заказ: {$product->min_quantity} шт. Доставка по Брянску.";
+        $description = "{$productName} оптом в Брянске: прайс по объёму, фото и расчёт стоимости. От {$minPrice}₽/шт при заказе от 100 020 шт. Минимальная партия: {$product->min_quantity} шт.";
 
         Seo::setTitle($title)
             ->setDescription($description)
@@ -59,13 +62,15 @@ class WholesaleController extends Controller
                 ['name' => $product->name, 'url' => route('wholesale.show', $product->slug)],
             ])
             ->setProductSchema(
-                name: $product->name,
+                name: $productName,
                 description: "Оптовая продажа тюльпанов {$product->name}",
                 price: $product->min_price,
                 currency: 'RUB',
                 image: $product->main_image,
                 url: route('wholesale.show', $product->slug),
-                availability: $product->is_available ? 'InStock' : 'OutOfStock'
+                availability: $product->is_available ? 'InStock' : 'OutOfStock',
+                sku: 'opt-'.$product->id,
+                minimumQuantity: max($product->min_quantity, 100020)
             );
 
         // Устанавливаем изображение для OG
@@ -73,7 +78,7 @@ class WholesaleController extends Controller
             Seo::setImage($product->main_image, $product->name);
         }
 
-        return view('wholesale.show', compact('product'));
+        return view('wholesale.show', compact('product', 'productName'));
     }
 
     /**
@@ -92,13 +97,13 @@ class WholesaleController extends Controller
      */
     private function setSeoForCatalog(int $page): void
     {
-        $title = 'Оптовая продажа тюльпанов — каталог';
+        $title = 'Тюльпаны оптом в Брянске — прайс и каталог сортов';
 
         if ($page > 1) {
             $title .= " — страница {$page}";
         }
 
-        $description = 'Оптовая продажа тюльпанов от производителя. Минимальный заказ от 1000 шт. Цены от 54₽/шт при заказе от 100000 шт. Доставка по Брянску и области.';
+        $description = 'Тюльпаны оптом в Брянске: каталог сортов с фото, прайс от 54 до 59₽/шт по объёму заказа. Минимальная партия от 1000 шт.; 54₽/шт — от 100 020 шт. Возможна доставка.';
 
         $canonicalUrl = $page > 1
             ? route('wholesale.index', ['page' => $page])

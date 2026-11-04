@@ -389,6 +389,8 @@
     </script>
     <!-- /Yandex.Metrika -->
 
+    @stack('scripts')
+
     <noscript>
         <div><img src="https://mc.yandex.ru/watch/104582209" style="position:absolute; left:-9999px;" alt="" /></div>
     </noscript>

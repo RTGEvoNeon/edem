@@ -89,7 +89,7 @@
                 <!-- Заголовок -->
                 <div>
                     <h1 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
-                        {{ $product->name }}
+                        {{ $productName }} оптом
                     </h1>
                 </div>
 
@@ -431,6 +431,9 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
 
             if (result.success) {
+                if (typeof ym !== 'undefined') {
+                    ym(104582209, 'reachGoal', 'wholesale_order_submitted');
+                }
                 successMessage.classList.remove('hidden');
                 form.reset();
                 calculatePrice();

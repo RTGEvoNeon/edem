@@ -177,7 +177,10 @@ class SeoService
         string $currency = 'RUB',
         ?string $image = null,
         ?string $url = null,
-        ?string $availability = 'InStock'
+        ?string $availability = 'InStock',
+        ?string $sku = null,
+        ?string $brand = null,
+        ?int $minimumQuantity = null
     ): self {
         $schema = [
             '@context' => 'https://schema.org/',
@@ -189,9 +192,26 @@ class SeoService
                 'price' => $price,
                 'priceCurrency' => $currency,
                 'availability' => "https://schema.org/{$availability}",
+                'itemCondition' => 'https://schema.org/NewCondition',
                 'url' => $url ?? $this->canonical ?? URL::current(),
             ],
         ];
+
+        if ($sku !== null) {
+            $schema['sku'] = $sku;
+        }
+
+        if ($brand !== null) {
+            $schema['brand'] = ['@type' => 'Brand', 'name' => $brand];
+        }
+
+        if ($minimumQuantity !== null) {
+            $schema['offers']['eligibleQuantity'] = [
+                '@type' => 'QuantitativeValue',
+                'minValue' => $minimumQuantity,
+                'unitCode' => 'C62',
+            ];
+        }
 
         if ($image) {
             $schema['image'] = str_starts_with($image, 'http') ? $image : url($image);
@@ -229,6 +249,7 @@ class SeoService
             'url' => $options['url'] ?? url('/'),
             'priceRange' => $options['priceRange'] ?? '₽₽',
             'openingHours' => $options['openingHours'] ?? 'Mo-Su 09:00-23:59',
+            'sameAs' => $options['sameAs'] ?? ['https://t.me/FlowersMindale'],
         ];
 
         $this->addSchema($schema);

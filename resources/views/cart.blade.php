@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@push('head')
+    <meta name="robots" content="noindex, follow">
+@endpush
+
 @section('content')
 <section class="max-w-4xl mx-auto px-6 lg:px-8 py-16 lg:py-24">
     <h1 class="font-display text-3xl lg:text-4xl font-bold text-gray-900 mb-10">Корзина</h1>

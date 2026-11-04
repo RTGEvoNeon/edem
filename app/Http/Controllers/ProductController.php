@@ -206,7 +206,9 @@ class ProductController extends Controller
                 currency: 'RUB',
                 image: $product->main_image,
                 url: route('products.show', $product->slug),
-                availability: $product->is_available ? 'InStock' : 'OutOfStock'
+                availability: $product->is_available ? 'InStock' : 'OutOfStock',
+                sku: (string) $product->id,
+                brand: 'Эдемский сад'
             );
 
         // Устанавливаем изображение для OG, если есть

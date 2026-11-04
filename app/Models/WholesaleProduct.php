@@ -60,7 +60,14 @@ class WholesaleProduct extends Model
      */
     public function scopeAvailable(Builder $query): Builder
     {
-        return $query->where('is_available', true);
+        $query->where('is_available', true);
+
+        // Не публикуем черновики прайса с нулевыми ценами как доступный товар.
+        foreach (range(1, 6) as $tier) {
+            $query->where('price_tier_'.$tier, '>', 0);
+        }
+
+        return $query;
     }
 
     /**

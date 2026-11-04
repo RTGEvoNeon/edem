@@ -149,7 +149,9 @@ class PaymentControllerTest extends TestCase
             ->assertSee("reachGoal', 'order_paid'", false)
             ->assertSee('"quantity":2', false)
             ->assertSee('"id":"'.$product->id.'"', false)
-            ->assertSee('ym_paid_'.$order->id, false);
+            ->assertSee('ym_paid_'.$order->id, false)
+            ->assertSee('<meta name="robots" content="noindex, nofollow">', false)
+            ->assertSeeInOrder(["ym(104582209, 'init'", "reachGoal', 'order_paid'"], false);
     }
 
     public function test_return_page_does_not_send_paid_goal_when_payment_canceled(): void
