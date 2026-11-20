@@ -18,10 +18,8 @@ Disallow: /register
 
 # Разрешить изображения
 Allow: /images/
-Allow: /storage/
-Allow: /*.jpg$
-Allow: /*.png$
-Allow: /*.webp$
+Allow: /storage/wholesales/
+Disallow: /storage/
 
 # Разрешить favicon
 Allow: /favicon.ico

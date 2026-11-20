@@ -58,7 +58,7 @@ class WholesaleController extends Controller
             ->setType('product')
             ->setBreadcrumbSchema([
                 ['name' => 'Главная', 'url' => url('/')],
-                ['name' => 'Оптовые продажи', 'url' => route('wholesale.index')],
+                ['name' => 'Оптовые продажи', 'url' => route('home')],
                 ['name' => $product->name, 'url' => route('wholesale.show', $product->slug)],
             ])
             ->setProductSchema(
@@ -106,8 +106,8 @@ class WholesaleController extends Controller
         $description = 'Тюльпаны оптом в Брянске: каталог сортов с фото, прайс от 54 до 59₽/шт по объёму заказа. Минимальная партия от 1000 шт.; 54₽/шт — от 100 020 шт. Возможна доставка.';
 
         $canonicalUrl = $page > 1
-            ? route('wholesale.index', ['page' => $page])
-            : route('wholesale.index');
+            ? route('home', ['page' => $page])
+            : route('home');
 
         Seo::setTitle($title)
             ->setDescription($description)
@@ -115,7 +115,7 @@ class WholesaleController extends Controller
             ->setCanonical($canonicalUrl)
             ->setBreadcrumbSchema([
                 ['name' => 'Главная', 'url' => url('/')],
-                ['name' => 'Оптовые продажи', 'url' => route('wholesale.index')],
+                ['name' => 'Оптовые продажи', 'url' => route('home')],
             ]);
 
         if ($page > 1) {

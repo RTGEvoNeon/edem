@@ -219,7 +219,7 @@
 </section>
 
 <!-- Карта — где мы находимся -->
-<section class="py-16 sm:py-24 bg-gradient-to-b from-white to-sage-50/50 relative overflow-hidden">
+<section id="contacts" class="py-16 sm:py-24 bg-gradient-to-b from-white to-sage-50/50 relative overflow-hidden">
     <div class="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-sage-300 to-transparent"></div>
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-10 sm:mb-12">
@@ -285,8 +285,8 @@
                     </svg>
                 </a>
 
-                <a href="/" class="inline-flex items-center gap-3 px-8 py-4 bg-white/10 backdrop-blur-sm text-white rounded-full font-semibold border-2 border-white/30 hover:bg-white/20 transition-all">
-                    <span>На главную</span>
+                <a href="#assortment" class="inline-flex items-center gap-3 px-8 py-4 bg-white/10 backdrop-blur-sm text-white rounded-full font-semibold border-2 border-white/30 hover:bg-white/20 transition-all">
+                    <span>Каталог сортов</span>
                 </a>
             </div>
         </div>

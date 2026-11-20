@@ -15,10 +15,11 @@ use App\Http\Controllers\WholesaleController;
 use App\Http\Controllers\WholesaleImportController;
 use App\Http\Controllers\WholesaleOrderController;
 use App\Http\Controllers\YooKassaWebhookController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Статические страницы
-Route::get('/', [PageController::class, 'home'])->name('home');
+Route::get('/', [WholesaleController::class, 'index'])->name('home');
 Route::get('/delivery', [PageController::class, 'delivery'])->name('delivery');
 Route::get('/about', [PageController::class, 'about'])->name('about');
 Route::get('/contacts', [PageController::class, 'contacts'])->name('contacts');
@@ -33,7 +34,9 @@ Route::get('/product/{slug}', [ProductController::class, 'show'])->name('product
 Route::get('/bukety/{category:key}', [ProductController::class, 'category'])->name('products.category');
 
 // Оптовый раздел
-Route::get('/opt', [WholesaleController::class, 'index'])->name('wholesale.index');
+Route::get('/opt', function (Request $request) {
+    return redirect('/'.($request->getQueryString() ? '?'.$request->getQueryString() : ''), 301);
+})->name('wholesale.index');
 Route::get('/opt/{slug}', [WholesaleController::class, 'show'])->name('wholesale.show');
 Route::post('/opt/order/submit', [WholesaleOrderController::class, 'submit'])->name('wholesale.order.submit');
 
