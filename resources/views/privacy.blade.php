@@ -668,7 +668,7 @@
                         <div class="space-y-2 text-sm sm:text-base text-white/90">
                             <p>ИНН 323200777288 · ОГРНИП 304325504400052</p>
                             <p>г. Брянск, ул. Академика Сахарова, 5</p>
-                            <p>Телефон: <a href="tel:+79532929246" class="hover:text-white transition-colors break-all">+7 (953) 292-92-46</a></p>
+                            <p>Телефон: <a href="tel:+79102333111" class="hover:text-white transition-colors break-all">+7 (910) 233-31-11</a></p>
                             <p class="break-words">Email для вопросов о персональных данных: <a href="mailto:edemskisadprivacy@yandex.ru" class="hover:text-white transition-colors underline">edemskisadprivacy@yandex.ru</a></p>
                             <p>Telegram: <a href="https://t.me/FlowersMindale" class="hover:text-white transition-colors underline">@FlowersMindale</a></p>
                         </div>

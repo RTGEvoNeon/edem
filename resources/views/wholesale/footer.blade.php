@@ -8,7 +8,6 @@
         <div class="flex flex-col items-start gap-3">
             <span class="font-semibold text-white">Оптовые заказы</span>
             <a href="tel:+79102333111" class="hover:text-white">+7 (910) 233-31-11</a>
-            <a href="tel:+79532929246" class="hover:text-white">+7 (953) 292-92-46</a>
         </div>
         <nav aria-label="Ссылки в подвале" class="flex flex-col items-start gap-3">
             <a href="{{ route('home') }}#assortment" class="hover:text-white">Каталог сортов</a>

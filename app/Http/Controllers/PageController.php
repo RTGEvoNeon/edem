@@ -27,7 +27,7 @@ class PageController extends Controller
             ->setLocalBusinessSchema([
                 'name' => 'Эдемский сад',
                 'description' => 'Цветочная мастерская для особенных моментов',
-                'telephone' => '+79532929246',
+                'telephone' => '+79102333111',
                 'city' => 'Брянск',
                 'region' => 'Брянская область',
                 'priceRange' => '₽₽',
@@ -95,7 +95,7 @@ class PageController extends Controller
     public function contacts(): View
     {
         Seo::setTitle('Контакты — Связаться с нами')
-            ->setDescription('Контакты цветочной мастерской Эдемский сад в Брянске. Телефон: +7 (953) 292-92-46. Telegram. Работаем ежедневно с 9:00 до 00:00.')
+            ->setDescription('Контакты цветочной мастерской Эдемский сад в Брянске. Телефон: +7 (910) 233-31-11. Telegram. Работаем ежедневно с 9:00 до 00:00.')
             ->setKeywords(['контакты цветочного магазина', 'телефон цветы Брянск', 'где купить цветы Брянск'])
             ->setCanonical(route('contacts'))
             ->setBreadcrumbSchema([

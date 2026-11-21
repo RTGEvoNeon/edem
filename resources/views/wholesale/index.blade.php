@@ -38,9 +38,6 @@
                 <a href="tel:+79102333111" class="text-2xl sm:text-3xl lg:text-4xl font-bold text-sage-700 hover:text-sage-600 active:text-sage-800 transition-colors tracking-tight tabular-nums">
                     +7 (910) 233-31-11
                 </a>
-                <a href="tel:+79532929246" class="text-2xl sm:text-3xl lg:text-4xl font-bold text-sage-700 hover:text-sage-600 active:text-sage-800 transition-colors tracking-tight tabular-nums">
-                    +7 (953) 292-92-46
-                </a>
             </div>
         </div>
 

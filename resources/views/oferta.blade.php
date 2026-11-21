@@ -198,7 +198,7 @@
             </div>
             <div class="space-y-4 text-gray-700 text-base sm:text-lg leading-relaxed">
                 <p>
-                    По всем вопросам, касающимся заказа, оплаты, доставки или возврата, Покупатель может обратиться к Продавцу по телефону <a href="tel:+79532929246" class="text-primary-600 hover:text-primary-700 font-medium">+7 (953) 292-92-46</a> или через <a href="https://t.me/FlowersMindale" class="text-primary-600 hover:text-primary-700 font-medium underline">Telegram</a>.
+                    По всем вопросам, касающимся заказа, оплаты, доставки или возврата, Покупатель может обратиться к Продавцу по телефону <a href="tel:+79102333111" class="text-primary-600 hover:text-primary-700 font-medium">+7 (910) 233-31-11</a> или через <a href="https://t.me/FlowersMindale" class="text-primary-600 hover:text-primary-700 font-medium underline">Telegram</a>.
                 </p>
                 <p>
                     Обработка персональных данных Покупателя осуществляется в соответствии с <a href="{{ route('privacy') }}" class="text-primary-600 hover:text-primary-700 font-medium underline">Политикой конфиденциальности</a>.
@@ -230,7 +230,7 @@
                         <p class="sm:col-span-2"><span class="text-white/60">Банк:</span> Брянское отделение № 8605 ПАО Сбербанк</p>
                         <p><span class="text-white/60">БИК:</span> 041501601</p>
                         <p><span class="text-white/60">Корр. счёт:</span> <span class="font-mono">30101810400000000601</span></p>
-                        <p class="sm:col-span-2">Телефон: <a href="tel:+79532929246" class="hover:text-white transition-colors underline">+7 (953) 292-92-46</a></p>
+                        <p class="sm:col-span-2">Телефон: <a href="tel:+79102333111" class="hover:text-white transition-colors underline">+7 (910) 233-31-11</a></p>
                     </div>
                 </div>
             </div>

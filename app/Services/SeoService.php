@@ -233,7 +233,7 @@ class SeoService
             'name' => $options['name'] ?? 'Эдемский сад',
             'image' => $options['image'] ?? url('/images/logo.jpg'),
             'description' => $options['description'] ?? 'Цветочная мастерская для особенных моментов. Свежие букеты с доставкой по Брянску',
-            'telephone' => $options['telephone'] ?? '+79532929246',
+            'telephone' => $options['telephone'] ?? '+79102333111',
             'address' => [
                 '@type' => 'PostalAddress',
                 'streetAddress' => $options['street'] ?? 'ул. Академика Сахарова, 5',

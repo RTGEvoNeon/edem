@@ -60,8 +60,8 @@
                         </div>
 
                         <h3 class="font-display text-2xl font-bold text-gray-900 mb-4">Телефон</h3>
-                        <a href="tel:+79532929246" class="text-2xl font-semibold text-primary-600 hover:text-primary-700 transition-colors block mb-2">
-                            +7 (953) 292-92-46
+                        <a href="tel:+79102333111" class="text-2xl font-semibold text-primary-600 hover:text-primary-700 transition-colors block mb-2">
+                            +7 (910) 233-31-11
                         </a>
                         <p class="text-gray-600 leading-relaxed">
                             Звоните нам в любое время для консультации и оформления заказа
